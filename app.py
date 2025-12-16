@@ -3,7 +3,7 @@ from resources.app_operations import AddExpense, CreateUser, GetExpenses,DeleteO
 from flask import render_template, request, redirect, session
 import pandas as pd
 from common.config import get_connection
-
+import os
 
 
 app = Flask(__name__)
@@ -148,4 +148,5 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=9877)
+    port = int(os.environ.get("PORT", 9877))
+    app.run(host="0.0.0.0", port=port)
