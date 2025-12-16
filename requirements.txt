@@ -1,0 +1,6 @@
+Flask==2.2.5
+Flask-RESTful==0.3.10
+psycopg2-binary==2.9.9
+pandas==2.0.3
+numpy==1.24.4
+python-dotenv==1.0.1
