@@ -1,0 +1,47 @@
+25-11-14 13:48:30 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:9877
+25-11-14 13:48:30 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+25-11-14 13:48:30 [INFO] werkzeug -  * Restarting with stat
+25-11-14 13:48:31 [WARNING] werkzeug -  * Debugger is active!
+25-11-14 13:48:31 [INFO] werkzeug -  * Debugger PIN: 134-347-229
+25-11-14 13:49:32 [DEBUG] MyApp - Connected to EXPT database.
+25-11-14 13:49:32 [DEBUG] MyApp - Connection established
+25-11-14 13:49:33 [DEBUG] MyApp - [{'serial_number': 3, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 200, 'log_creation_date': Timestamp('2025-11-14 13:42:07')}, {'serial_number': 2, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 200, 'log_creation_date': Timestamp('2025-11-14 13:41:08')}, {'serial_number': 1, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 50, 'log_creation_date': Timestamp('2025-11-14 13:40:44')}]
+25-11-14 13:49:33 [INFO] werkzeug - 127.0.0.1 - - [14/Nov/2025 13:49:33] "[35m[1mPOST /ExpenseTracker/GetExpenses HTTP/1.1[0m" 500 -
+25-11-14 13:50:02 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:9877
+25-11-14 13:50:02 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+25-11-14 13:50:02 [INFO] werkzeug -  * Restarting with stat
+25-11-14 13:50:03 [WARNING] werkzeug -  * Debugger is active!
+25-11-14 13:50:03 [INFO] werkzeug -  * Debugger PIN: 134-347-229
+25-11-14 13:50:05 [DEBUG] MyApp - Connected to EXPT database.
+25-11-14 13:50:05 [DEBUG] MyApp - Connection established
+25-11-14 13:50:05 [DEBUG] MyApp - [{'serial_number': 3, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 200, 'log_creation_date': Timestamp('2025-11-14 13:42:07')}, {'serial_number': 2, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 200, 'log_creation_date': Timestamp('2025-11-14 13:41:08')}, {'serial_number': 1, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 50, 'log_creation_date': Timestamp('2025-11-14 13:40:44')}]
+25-11-14 13:50:05 [INFO] werkzeug - 127.0.0.1 - - [14/Nov/2025 13:50:05] "[35m[1mPOST /ExpenseTracker/GetExpenses HTTP/1.1[0m" 500 -
+25-11-14 13:51:25 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:9877
+25-11-14 13:51:25 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+25-11-14 13:51:25 [INFO] werkzeug -  * Restarting with stat
+25-11-14 13:51:26 [WARNING] werkzeug -  * Debugger is active!
+25-11-14 13:51:26 [INFO] werkzeug -  * Debugger PIN: 134-347-229
+25-11-14 13:51:29 [DEBUG] MyApp - Connected to EXPT database.
+25-11-14 13:51:29 [DEBUG] MyApp - Connection established
+25-11-14 13:51:29 [DEBUG] MyApp - [{'serial_number': 3, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 200, 'log_creation_date': '2025-11-14 13:42:07'}, {'serial_number': 2, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 200, 'log_creation_date': '2025-11-14 13:41:08'}, {'serial_number': 1, 'user_id': 1, 'category': 'Travel', 'description': 'Bus Ticket', 'amount': 50, 'log_creation_date': '2025-11-14 13:40:44'}]
+25-11-14 13:51:29 [INFO] werkzeug - 127.0.0.1 - - [14/Nov/2025 13:51:29] "POST /ExpenseTracker/GetExpenses HTTP/1.1" 200 -
+25-11-14 13:58:07 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:9877
+25-11-14 13:58:07 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+25-11-14 13:58:07 [INFO] werkzeug -  * Restarting with stat
+25-11-14 13:58:08 [WARNING] werkzeug -  * Debugger is active!
+25-11-14 13:58:08 [INFO] werkzeug -  * Debugger PIN: 134-347-229
+25-11-14 13:58:58 [DEBUG] MyApp - Error while connecting to EXPT_DB database: connection to server at "localhost" (::1), port 5432 failed: fe_sendauth: no password supplied
+
+25-11-14 13:58:58 [INFO] werkzeug - 127.0.0.1 - - [14/Nov/2025 13:58:58] "[35m[1mPOST /ExpenseTracker/DeleteOldExpenses HTTP/1.1[0m" 500 -
+25-11-14 14:00:06 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:9877
+25-11-14 14:00:06 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+25-11-14 14:00:06 [INFO] werkzeug -  * Restarting with stat
+25-11-14 14:00:07 [WARNING] werkzeug -  * Debugger is active!
+25-11-14 14:00:07 [INFO] werkzeug -  * Debugger PIN: 134-347-229
+25-11-14 14:00:09 [DEBUG] MyApp - Connected to EXPT database.
+25-11-14 14:00:09 [INFO] werkzeug - 127.0.0.1 - - [14/Nov/2025 14:00:09] "POST /ExpenseTracker/DeleteOldExpenses HTTP/1.1" 200 -
