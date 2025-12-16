@@ -3,6 +3,7 @@ from common.config import get_connection
 conn = get_connection("EXPT")
 cursor = conn.cursor()
 
+# Create tables
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS et_users (
     user_id SERIAL PRIMARY KEY,
@@ -23,8 +24,17 @@ CREATE TABLE IF NOT EXISTS expense_logs (
 );
 """)
 
+# Insert default user (ONLY if not exists)
+cursor.execute("""
+INSERT INTO et_users (user_name, user_password)
+SELECT 'Kowshik', 'Admin7'
+WHERE NOT EXISTS (
+    SELECT 1 FROM et_users WHERE user_name = 'Kowshik'
+);
+""")
+
 conn.commit()
 cursor.close()
 conn.close()
 
-print("✅ Database tables created successfully")
+print("✅ Tables created and default user added")
