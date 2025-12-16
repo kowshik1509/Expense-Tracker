@@ -4,6 +4,9 @@ from flask import render_template, request, redirect, session
 import pandas as pd
 from common.config import get_connection
 import os
+from resources.app_operations import ensure_tables_exist
+
+ensure_tables_exist()
 
 
 app = Flask(__name__)
@@ -31,9 +34,7 @@ def login():
 # ---------------- CREATE USER ----------------
 @app.route("/ExpenseTracker/Createuser", methods=["GET", "POST"])
 def create_user():
-    if "user" not in session:
-        return redirect("/ExpenseTracker/Login")
-
+    
     if request.method == "GET":
         return render_template("create_user.html")
 
