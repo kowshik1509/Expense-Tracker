@@ -5,20 +5,26 @@ from dotenv import load_dotenv
 from datetime import datetime
 load_dotenv()
 
-time = datetime.now()
+# Create logs directory if not exists
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
 
-formatted_time = time.strftime("%y-%m-%d")
+formatted_time = datetime.now().strftime("%Y-%m-%d")
+
+log_file_path = os.path.join(
+    LOG_DIR, f"ExpenseTracker_{formatted_time}.logs"
+)
+
 logging.basicConfig(
-    level=logging.DEBUG, 
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
-    datefmt= '%y-%m-%d %H:%M:%S',
     handlers=[
-        logging.FileHandler(f"ExpenseTracker_{formatted_time}.logs", mode='a'),  # Log to file (append mode)
-        logging.StreamHandler()  # Log to console
+        logging.FileHandler(log_file_path, mode="a"),
+        logging.StreamHandler()
     ]
 )
 
-logger = logging.getLogger("MyApp")
+logger = logging.getLogger("ExpenseTracker")
 
 def get_connection(db_name):
         try:
