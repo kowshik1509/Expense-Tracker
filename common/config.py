@@ -13,7 +13,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     datefmt= '%y-%m-%d %H:%M:%S',
     handlers=[
-        logging.FileHandler(f"D:/Kowshik/Expense_Tracker/logs/ExpenseTracker_{formatted_time}.logs", mode='a'),  # Log to file (append mode)
+        logging.FileHandler(f"ExpenseTracker_{formatted_time}.logs", mode='a'),  # Log to file (append mode)
         logging.StreamHandler()  # Log to console
     ]
 )
