@@ -1,4 +1,4 @@
-from common.config import get_connection
+from common.config import get_connection, logger
 
 conn = get_connection("EXPT")
 cursor = conn.cursor()
@@ -17,6 +17,7 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS expense_logs (
     expense_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES et_users(user_id) ON DELETE CASCADE,
+    user_name varchar(100),
     category VARCHAR(100),
     description TEXT,
     amount NUMERIC(10,2),
@@ -24,17 +25,9 @@ CREATE TABLE IF NOT EXISTS expense_logs (
 );
 """)
 
-# Insert default user (ONLY if not exists)
-cursor.execute("""
-INSERT INTO et_users (user_name, user_password)
-SELECT 'Kowshik', 'Admin7'
-WHERE NOT EXISTS (
-    SELECT 1 FROM et_users WHERE user_name = 'Kowshik'
-);
-""")
 
 conn.commit()
 cursor.close()
 conn.close()
 
-print("✅ Tables created and default user added")
+logger.debug("Tables created and default user added")
