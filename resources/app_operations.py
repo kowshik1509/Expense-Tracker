@@ -84,7 +84,6 @@ class AddExpense(Resource):
             INSERT INTO expense_logs (user_name, log_creation_date, category, description, amount)
             VALUES (%s, %s, %s, %s, %s);
         """
-
         cursor.execute(
             insert_query,
             (user_name, login_time, category, description, amount)
@@ -240,6 +239,7 @@ def ensure_tables_exist():
     conn = get_connection("EXPT")
     cursor = conn.cursor()
 
+    # Create users table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS et_users (
         user_id SERIAL PRIMARY KEY,
@@ -249,11 +249,12 @@ def ensure_tables_exist():
     );
     """)
 
+    # Create expenses table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS expense_logs (
         expense_id SERIAL PRIMARY KEY,
-        user_id INT REFERENCES et_users(user_id) ON DELETE CASCADE,
-        user_name VARCHAR(100) UNIQUE NOT NULL,
+        user_id INT NOT NULL,
+        user_name VARCHAR(100),
         category VARCHAR(100),
         description TEXT,
         amount NUMERIC(10,2),
@@ -261,6 +262,12 @@ def ensure_tables_exist():
     );
     """)
 
+    cursor.execute("""
+    ALTER TABLE expense_logs
+    ADD COLUMN IF NOT EXISTS user_name VARCHAR(100);
+    """)
+
     conn.commit()
     cursor.close()
     conn.close()
+
