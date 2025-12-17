@@ -173,7 +173,7 @@ class GetExpenses(Resource):
 
         # Fetch expense logs in date range
         fetch_query = """
-            SELECT entry_no, user_name, category, description, amount, log_creation_date
+            SELECT expense_id, user_name, category, description, amount, log_creation_date
             FROM expense_logs
             WHERE user_name = %s
               AND log_creation_date::date BETWEEN %s AND %s
