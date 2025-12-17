@@ -253,6 +253,7 @@ def ensure_tables_exist():
     CREATE TABLE IF NOT EXISTS expense_logs (
         expense_id SERIAL PRIMARY KEY,
         user_id INT REFERENCES et_users(user_id) ON DELETE CASCADE,
+        user_name VARCHAR(100) UNIQUE NOT NULL
         category VARCHAR(100),
         description TEXT,
         amount NUMERIC(10,2),
