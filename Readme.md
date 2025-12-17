@@ -105,7 +105,7 @@ python app.py
 
 Open your browser and visit:
 
-http://127.0.0.1:9877/login
+http://127.0.0.1:9877/ExpenseTracker/Login
 
 🔗 Application Routes
 Route	Description

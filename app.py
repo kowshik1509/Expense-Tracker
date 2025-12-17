@@ -6,12 +6,15 @@ from common.config import get_connection
 import os
 from resources.app_operations import ensure_tables_exist
 
-ensure_tables_exist()
+
 
 
 app = Flask(__name__)
 app.secret_key = "expense_tracker_secret"  
 
+@app.before_first_request
+def init_db():
+    ensure_tables_exist()
 
 @app.route("/ExpenseTracker/Login", methods=["GET", "POST"])
 def login():
