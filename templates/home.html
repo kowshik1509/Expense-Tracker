@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  .dashboard {
+    max-width: 1000px;
+    margin: 40px auto;
+  }
+
+  .welcome {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 30px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+    margin-bottom: 30px;
+  }
+
+  .card {
+    background: white;
+    padding: 24px;
+    border-radius: 18px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+  }
+
+  .card-title {
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  .card-value {
+    font-size: 30px;
+    font-weight: 900;
+    color: #4f46e5;
+    margin-top: 8px;
+  }
+
+  .chart-card {
+    background: white;
+    padding: 30px;
+    border-radius: 22px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+  }
+</style>
+
+<div class="dashboard">
+
+  <div class="welcome">
+    👋 Welcome, {{ username }}
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Total Expenses</div>
+      <div class="card-value">₹ {{ grand_total }}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Categories</div>
+      <div class="card-value">{{ categories|length }}</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h3>📊 Expenses by Category</h3>
+    <canvas id="expenseChart"></canvas>
+  </div>
+
+</div>
+
+<script>
+  const ctx = document.getElementById("expenseChart");
+
+  new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: {{ categories|tojson|safe }},
+      datasets: [{
+        data: {{ totals|tojson|safe }},
+        backgroundColor: [
+          "#6366f1",
+          "#22c55e",
+          "#ef4444",
+          "#f59e0b",
+          "#06b6d4",
+          "#8b5cf6"
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "bottom"
+        }
+      }
+    }
+  });
+</script>
+
+
+{% endblock %}

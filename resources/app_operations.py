@@ -10,7 +10,6 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", datefmt='%Y-%m-%d %H:%M:%S')
 from common.config import get_connection
 
-
 class LoginUser(Resource):
     def post(self, data=None):
         if data is None:
@@ -35,6 +34,51 @@ class LoginUser(Resource):
 
         return {"message": "Login successful"}, 200
 
+class DashboardSummary(Resource):
+    def post(self, data=None):
+        if data is None:
+            data = request.get_json()
+
+        conn = get_connection("EXPT")
+
+        user_name = data.get("USER_NAME")
+        password = data.get("PASSWORD")
+
+        if not user_name or not password:
+            return {"error": "USER_NAME and PASSWORD are required"}, 400
+
+        # Validate user
+        query = "SELECT user_password FROM et_users WHERE user_name = %s"
+        df = pd.read_sql(query, conn, params=[user_name])
+
+        if df.empty:
+            return {"error": "User not found"}, 404
+
+        if df.iloc[0]["user_password"] != password:
+            return {"error": "Incorrect password"}, 401
+
+        # Aggregate expenses
+        agg_query = """
+            SELECT category, SUM(amount) AS total
+            FROM expense_logs
+            WHERE user_name = %s
+            GROUP BY category
+        """
+
+        df_summary = pd.read_sql(agg_query, conn, params=[user_name])
+
+        if df_summary.empty:
+            return {"categories": [], "totals": [], "grand_total": 0}, 200
+
+        categories = df_summary["category"].tolist()
+        totals = df_summary["total"].astype(float).tolist()
+        grand_total = float(df_summary["total"].sum())
+
+        return {
+            "categories": categories,
+            "totals": totals,
+            "grand_total": grand_total
+        }, 200
 
 class AddExpense(Resource):
     def post(self, data=None):
@@ -103,9 +147,6 @@ class CreateUser(Resource):
 
         user_name = data.get("USER_NAME")
         password = data.get("PASSWORD")
-
-       
-
 
         # Validate inputs
         if not user_name or not password:

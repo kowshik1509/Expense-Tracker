@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, flash
-from resources.app_operations import AddExpense, CreateUser, GetExpenses,DeleteOldExpenses, LoginUser
+from resources.app_operations import AddExpense, CreateUser, GetExpenses,DeleteOldExpenses, LoginUser,DashboardSummary
+
 from flask import render_template, request, redirect, session
 import pandas as pd
 from common.config import get_connection
@@ -15,6 +16,40 @@ app.secret_key = "expense_tracker_secret"
 @app.before_first_request
 def init_db():
     ensure_tables_exist()
+
+@app.route("/ExpenseTracker/Home")
+def home():
+    if "user" not in session:
+        return redirect("/ExpenseTracker/Login")
+
+    user = session["user"]
+    conn = get_connection("EXPT")
+
+    query = """
+        SELECT category, SUM(amount) AS total
+        FROM expense_logs
+        WHERE user_name = %s
+        GROUP BY category
+    """
+    df = pd.read_sql(query, conn, params=[user])
+
+    if df.empty:
+        categories = []
+        totals = []
+        grand_total = 0
+    else:
+        categories = df["category"].tolist()
+        totals = df["total"].astype(float).tolist()
+        grand_total = float(df["total"].sum())
+
+    return render_template(
+        "home.html",
+        username=user,
+        categories=categories,
+        totals=totals,
+        grand_total=grand_total
+    )
+
 
 @app.route("/ExpenseTracker/Login", methods=["GET", "POST"])
 def login():
@@ -32,7 +67,8 @@ def login():
         return render_template("login.html", error=res.get("error"))
 
     session["user"] = data["USER_NAME"]
-    return redirect("/ExpenseTracker/AddExpense")
+    return redirect("/ExpenseTracker/Home")
+
 
 # ---------------- CREATE USER ----------------
 @app.route("/ExpenseTracker/Createuser", methods=["GET", "POST"])
