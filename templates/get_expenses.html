@@ -236,37 +236,37 @@
 </div>
 {% endif %}
 
+{% if categories is defined and categories|length > 0 %}
 <script>
   const ctx = document.getElementById("expenseChart");
 
-  if (ctx) {
-    new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: {{ categories|tojson|safe }},
-        datasets: [{
-          data: {{ totals|tojson|safe }},
-          backgroundColor: [
-            "#6366f1",
-            "#22c55e",
-            "#ef4444",
-            "#f59e0b",
-            "#06b6d4",
-            "#8b5cf6"
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "bottom"
-          }
+  new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: {{ categories|tojson|safe }},
+      datasets: [{
+        data: {{ totals|tojson|safe }},
+        backgroundColor: [
+          "#6366f1",
+          "#22c55e",
+          "#ef4444",
+          "#f59e0b",
+          "#06b6d4",
+          "#8b5cf6"
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "bottom"
         }
       }
-    });
-  }
+    }
+  });
 </script>
+{% endif %}
+
 
 {% endblock %}

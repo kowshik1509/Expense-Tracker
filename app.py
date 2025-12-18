@@ -130,7 +130,12 @@ def get_expenses():
         return redirect("/ExpenseTracker/Login")
 
     if request.method == "GET":
-        return render_template("get_expenses.html")
+        return render_template(
+        "get_expenses.html",
+        categories=[],
+        totals=[],
+        grand_total=0
+        )       
 
     data = {
         "USER_NAME":session["user"],
