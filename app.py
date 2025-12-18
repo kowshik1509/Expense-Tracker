@@ -101,9 +101,9 @@ def add_expense():
 
     if request.method == "GET":
         return render_template("add_expense.html")
-
+    
     data = {
-        "USER_NAME": request.form["username"],
+        "USER_NAME":session["user"],
         "PASSWORD": request.form["password"],
         "PARAMS": {
             "CATEGORY": request.form["category"],
@@ -133,7 +133,7 @@ def get_expenses():
         return render_template("get_expenses.html")
 
     data = {
-        "USER_NAME": request.form["username"],
+        "USER_NAME":session["user"],
         "PASSWORD": request.form["password"],
         "PARAMS": {
             "FROM_DATE": request.form["from_date"],
@@ -164,7 +164,7 @@ def delete_expenses():
         return render_template("delete_expenses.html")
 
     data = {
-        "USER_NAME": request.form["username"],
+        "USER_NAME":session["user"],
         "PASSWORD": request.form["password"],
         "PARAMS": {
             "BEFORE_DATE": request.form["before_date"]
