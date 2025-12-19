@@ -307,7 +307,13 @@ def ensure_tables_exist():
     ALTER TABLE expense_logs
     ADD COLUMN IF NOT EXISTS user_name VARCHAR(100);
     """)
-
+    cursor.execute("""CREATE TABLE IF NOT EXISTS et_admins (
+    admin_id SERIAL PRIMARY KEY,
+    admin_username VARCHAR(100) UNIQUE NOT NULL,
+    admin_password VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+                   """)
     conn.commit()
     cursor.close()
     conn.close()
