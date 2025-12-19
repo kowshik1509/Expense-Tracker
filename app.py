@@ -248,6 +248,37 @@ def admin_logout():
     session.pop("admin", None)
     return redirect("/ExpenseTracker/Login")
 
+# 🚨 TEMPORARY: CREATE FIRST ADMIN (REMOVE AFTER USE)
+@app.route("/ExpenseTracker/Admin/Bootstrap", methods=["GET", "POST"])
+def bootstrap_admin():
+    if request.method == "GET":
+        return render_template("admin_bootstrap.html")
+
+    username = request.form["username"]
+    password = request.form["password"]
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            INSERT INTO et_admins (admin_username, admin_password)
+            VALUES (%s, %s)
+        """, (username, password))
+
+        conn.commit()
+        message = "Admin created successfully. REMOVE THIS ROUTE NOW."
+
+    except Exception:
+        conn.rollback()
+        message = "Admin already exists"
+
+    return render_template(
+        "admin_bootstrap.html",
+        message=message
+    )
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 9877))
     app.run(host="0.0.0.0", port=port)
