@@ -247,6 +247,42 @@ def admin_dashboard():
         users=users
     )
 
+@app.route("/ExpenseTracker/Admin/Create", methods=["GET", "POST"])
+def admin_create():
+    if "admin" not in session:
+        return redirect("/ExpenseTracker/Admin/Login")
+
+    if request.method == "GET":
+        return render_template("admin_create.html")
+
+    username = request.form["username"].strip()
+    password = request.form["password"].strip()
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            INSERT INTO et_admins (admin_username, admin_password)
+            VALUES (%s, %s)
+        """, (username, password))
+
+        conn.commit()
+        message = "Admin created successfully"
+
+    except Exception as e:
+        conn.rollback()
+        message = "Admin already exists"
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return render_template(
+        "admin_create.html",
+        message=message
+    )
+
 
 @app.route("/ExpenseTracker/Admin/Logout")
 def admin_logout():

@@ -1,48 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-------------------- CHART.JS -------------------->
+<!-- ================= CHART.JS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-------------------- STYLES -------------------->
+<!-- ================= STYLES ================= -->
 <style>
-  body {
-    background: linear-gradient(135deg, #5f2cff, #7b4bff);
+  :root {
+    --primary: #4f46e5;
+    --accent: #0ea5e9;
+    --success: #22c55e;
+
+    --card-bg: #ffffff;
+    --border: #e5e7eb;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
   }
 
   .dashboard {
     max-width: 1100px;
-    margin: 40px auto;
+    margin: 40px auto 60px auto;
   }
 
   .welcome {
-    color: #ffffff;
     font-weight: 900;
-    font-size: 28px;
-    margin-bottom: 25px;
+    font-size: 26px;
+    margin-bottom: 28px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
+    gap: 28px;
   }
 
   .dash-card {
-    background: #ffffff;
+    background: var(--card-bg);
     border-radius: 18px;
-    padding: 22px;
-    box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+    padding: 26px;
+    box-shadow: 0 22px 45px rgba(0,0,0,0.18);
     height: 360px;
+    animation: fadeIn 0.4s ease-in-out;
   }
 
   .dash-card h3 {
-    color: #111827;
-    font-weight: 900;
-    margin-bottom: 12px;
+    color: var(--text-main);
+    font-weight: 800;
+    margin-bottom: 14px;
   }
 
-  /* SMALL PIE CHART */
+  /* PIE CHART */
   #expenseChart {
     max-width: 260px;
     max-height: 260px;
@@ -59,30 +69,41 @@
   }
 
   .summary-card h3 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .summary-card h4 {
-    margin-top: 20px;
-    font-weight: 800;
-    color: #1f2937;
+    margin-top: 18px;
+    font-weight: 700;
+    color: var(--text-muted);
   }
 
   .amount {
     font-size: 42px;
     font-weight: 900;
-    color: #4f46e5;
-    margin: 12px 0;
+    color: var(--primary);
+    margin: 10px 0;
   }
 
   .count {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 900;
-    color: #16a34a;
+    color: var(--success);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
 
-<!-------------------- HTML -------------------->
+<!-- ================= HTML ================= -->
 <div class="dashboard">
 
   <h2 class="welcome">👋 Welcome, {{ username }}</h2>
@@ -97,32 +118,30 @@
 
     <!-- SUMMARY CARD -->
     <div class="dash-card summary-card">
-      <h3>💰 Total Expense</h3>
+      <h3>💰 Total Expenses</h3>
       <div class="amount">₹ {{ grand_total }}</div>
 
-      <h4>No. of Categories </h4>
+      <h4>No. of Categories</h4>
       <div class="count">{{ categories|length }}</div>
     </div>
 
   </div>
 </div>
 
-<!-------------------- JS -------------------->
+<!-- ================= JS ================= -->
 <script>
-  const ctx = document.getElementById("expenseChart");
-
-  new Chart(ctx, {
+  new Chart(document.getElementById("expenseChart"), {
     type: "pie",
     data: {
       labels: {{ categories|tojson|safe }},
       datasets: [{
         data: {{ totals|tojson|safe }},
         backgroundColor: [
-          "#6366f1",
+          "#4f46e5",
           "#22c55e",
           "#ef4444",
           "#f59e0b",
-          "#06b6d4",
+          "#0ea5e9",
           "#8b5cf6"
         ]
       }]
@@ -134,7 +153,7 @@
         legend: {
           position: "bottom",
           labels: {
-            color: "#111827",
+            color: "#1f2937",
             font: {
               size: 13,
               weight: "bold"
