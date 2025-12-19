@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}Admin{% endblock %}</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    .admin-nav {
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 25px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .admin-nav .logo {
+      font-size: 18px;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .admin-nav a {
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      color: #444;
+      transition: color 0.2s;
+    }
+
+    .admin-nav a:hover {
+      color: #ff5e62;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="admin-nav">
+    <div class="logo">👑 ExpenseTracker Admin</div>
+    <div>
+      <a href="/ExpenseTracker/Admin/Dashboard">Dashboard</a>
+      <a href="/ExpenseTracker/Admin/Create">Create Admin</a>
+      <a href="/ExpenseTracker/Admin/Logout">Logout</a>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+</body>
+</html>

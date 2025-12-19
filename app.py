@@ -225,58 +225,29 @@ def admin_dashboard():
     conn = get_connection("EXPT")
     cur = conn.cursor()
 
-    # ✅ Allowed: metadata only
+    # Total users
     cur.execute("SELECT COUNT(*) FROM et_users")
     total_users = cur.fetchone()[0]
 
+    # Users with registration date
     cur.execute("""
-        SELECT DATE(created_at), COUNT(*)
+        SELECT user_name, created_at
         FROM et_users
-        GROUP BY DATE(created_at)
-        ORDER BY DATE(created_at) DESC
-        LIMIT 7
+        ORDER BY created_at DESC
+        LIMIT 10
     """)
-    new_users = cur.fetchall()
+    users = cur.fetchall()
 
     return render_template(
         "admin_dashboard.html",
         total_users=total_users,
-        new_users=new_users
+        users=users
     )
+
 @app.route("/ExpenseTracker/Admin/Logout")
 def admin_logout():
     session.pop("admin", None)
     return redirect("/ExpenseTracker/Login")
-
-# 🚨 TEMPORARY: CREATE FIRST ADMIN (REMOVE AFTER USE)
-@app.route("/ExpenseTracker/Admin/Bootstrap", methods=["GET", "POST"])
-def bootstrap_admin():
-    if request.method == "GET":
-        return render_template("admin_bootstrap.html")
-
-    username = request.form["username"]
-    password = request.form["password"]
-
-    conn = get_connection("EXPT")
-    cur = conn.cursor()
-
-    try:
-        cur.execute("""
-            INSERT INTO et_admins (admin_username, admin_password)
-            VALUES (%s, %s)
-        """, (username, password))
-
-        conn.commit()
-        message = "Admin created successfully. REMOVE THIS ROUTE NOW."
-
-    except Exception:
-        conn.rollback()
-        message = "Admin already exists"
-
-    return render_template(
-        "admin_bootstrap.html",
-        message=message
-    )
 
 
 if __name__ == "__main__":
