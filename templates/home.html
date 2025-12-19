@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- ================= CHART.JS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- ================= STYLES ================= -->
 <style>
   :root {
     --primary: #4f46e5;
@@ -12,23 +10,38 @@
     --success: #22c55e;
 
     --card-bg: #ffffff;
-    --border: #e5e7eb;
     --text-main: #1f2937;
     --text-muted: #6b7280;
   }
 
+  /* ===== DASHBOARD BACKGROUND (DIFFERENT FROM LOGIN) ===== */
+  .dashboard-bg {
+    width: 100%;
+    min-height: calc(100vh - 72px);
+    padding: 60px 24px 80px;
+
+    background:
+      linear-gradient(
+        rgba(248,250,252,0.92),
+        rgba(248,250,252,0.92)
+      ),
+      url("https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1920&q=80");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
   .dashboard {
     max-width: 1100px;
-    margin: 40px auto 60px auto;
+    margin: 0 auto;
   }
 
   .welcome {
     font-weight: 900;
     font-size: 26px;
-    margin-bottom: 28px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin-bottom: 32px;
+    color: var(--text-main);
   }
 
   .dashboard-grid {
@@ -40,16 +53,16 @@
   .dash-card {
     background: var(--card-bg);
     border-radius: 18px;
-    padding: 26px;
-    box-shadow: 0 22px 45px rgba(0,0,0,0.18);
+    padding: 28px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.18);
     height: 360px;
-    animation: fadeIn 0.4s ease-in-out;
+    animation: fadeIn 0.35s ease-in-out;
   }
 
   .dash-card h3 {
     color: var(--text-main);
     font-weight: 800;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
 
   /* PIE CHART */
@@ -103,32 +116,30 @@
   }
 </style>
 
-<!-- ================= HTML ================= -->
-<div class="dashboard">
+<div class="dashboard-bg">
+  <div class="dashboard">
 
-  <h2 class="welcome">👋 Welcome, {{ username }}</h2>
+    <h2 class="welcome">Welcome back, {{ username }}</h2>
 
-  <div class="dashboard-grid">
+    <div class="dashboard-grid">
 
-    <!-- PIE CHART CARD -->
-    <div class="dash-card">
-      <h3>📊 Expenses by Category</h3>
-      <canvas id="expenseChart"></canvas>
+      <div class="dash-card">
+        <h3>📊 Expenses by Category</h3>
+        <canvas id="expenseChart"></canvas>
+      </div>
+
+      <div class="dash-card summary-card">
+        <h3>Total Expenses</h3>
+        <div class="amount">₹ {{ grand_total }}</div>
+
+        <h4>Categories Used</h4>
+        <div class="count">{{ categories|length }}</div>
+      </div>
+
     </div>
-
-    <!-- SUMMARY CARD -->
-    <div class="dash-card summary-card">
-      <h3>💰 Total Expenses</h3>
-      <div class="amount">₹ {{ grand_total }}</div>
-
-      <h4>No. of Categories</h4>
-      <div class="count">{{ categories|length }}</div>
-    </div>
-
   </div>
 </div>
 
-<!-- ================= JS ================= -->
 <script>
   new Chart(document.getElementById("expenseChart"), {
     type: "pie",

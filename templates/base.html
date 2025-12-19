@@ -7,10 +7,12 @@
     <style>
         :root {
             --primary: #4f46e5;      /* Indigo */
-            --primary-dark: #4338ca;
             --accent: #0ea5e9;       /* Sky Blue */
             --accent-2: #22c55e;
-            --danger: #dc2626;
+
+            --danger: #dc2626;       /* Strong red (logout) */
+            --danger-text: #dc2626; /* Delete text */
+            --danger-soft: #fee2e2; /* Light delete underline */
 
             --nav-bg: rgba(255,255,255,0.97);
             --border: #e5e7eb;
@@ -41,7 +43,7 @@
             color: var(--text-main);
         }
 
-        /* ================= NAVBAR (MATCHED WITH ADMIN) ================= */
+        /* ================= NAVBAR ================= */
         .navbar {
             position: sticky;
             top: 0;
@@ -108,6 +110,20 @@
             width: 100%;
         }
 
+        /* ===== DELETE (LIGHT RED) ===== */
+        .nav-links a.delete {
+            color: var(--danger-text);
+        }
+
+        .nav-links a.delete::after {
+            background: linear-gradient(90deg, #fca5a5, #dc2626);
+        }
+
+        .nav-links a.delete:hover {
+            color: #b91c1c;
+        }
+
+        /* ===== LOGOUT (STRONG RED) ===== */
         .nav-links a.logout {
             color: var(--danger);
         }
@@ -178,10 +194,10 @@
         <div class="logo">💰 ExpenseTracker</div>
 
         <div class="nav-links">
-            <a href="/ExpenseTracker/Home">🏠 Home</a>
-            <a href="/ExpenseTracker/AddExpense">💲 Add Expense</a>
-            <a href="/ExpenseTracker/GetExpenses">🧾 View Expenses</a>
-            <a href="/ExpenseTracker/DeleteOldExpenses">🗑 Delete</a>
+            <a href="/ExpenseTracker/Home">Home</a>
+            <a href="/ExpenseTracker/AddExpense">Add Expense</a>
+            <a href="/ExpenseTracker/GetExpenses">View Expenses</a>
+            <a href="/ExpenseTracker/DeleteOldExpenses" class="delete">Delete</a>
             <a href="/logout" class="logout">Logout</a>
         </div>
     </nav>

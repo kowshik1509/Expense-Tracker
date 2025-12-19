@@ -225,27 +225,45 @@ def admin_dashboard():
     conn = get_connection("EXPT")
     cur = conn.cursor()
 
-    # Total users
+    # ================= USERS =================
     cur.execute("SELECT COUNT(*) FROM et_users")
     total_users = cur.fetchone()[0]
 
-    # ALL users (SAFE FIELDS ONLY)
     cur.execute("""
         SELECT user_id, user_name, created_at
         FROM et_users
+        ORDER BY created_at DESC
     """)
     users = [
         {"id": r[0], "name": r[1], "created": r[2]}
         for r in cur.fetchall()
     ]
 
+    # ================= ADMINS =================
+    cur.execute("SELECT COUNT(*) FROM et_admins")
+    total_admins = cur.fetchone()[0]
 
+    cur.execute("""
+        SELECT admin_id, admin_username, created_at
+        FROM et_admins
+        ORDER BY created_at DESC
+    """)
+    admins = [
+        {"id": r[0], "username": r[1], "created": r[2]}
+        for r in cur.fetchall()
+    ]
+
+    cur.close()
+    conn.close()
 
     return render_template(
         "admin_dashboard.html",
         total_users=total_users,
-        users=users
+        total_admins=total_admins,
+        users=users,
+        admins=admins
     )
+
 
 @app.route("/ExpenseTracker/Admin/Create", methods=["GET", "POST"])
 def admin_create():
