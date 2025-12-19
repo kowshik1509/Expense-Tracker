@@ -1,0 +1,15 @@
+<h2>Admin Dashboard</h2>
+
+<p><b>Total Users:</b> {{ total_users }}</p>
+
+<h3>New Users (Last 7 Days)</h3>
+<ul>
+  {% for day, count in new_users %}
+    <li>{{ day }} → {{ count }}</li>
+  {% endfor %}
+</ul>
+
+<a href="/ExpenseTracker/Admin/Create">Create New Admin</a>
+<br><br>
+<a href="/ExpenseTracker/Admin/Logout">Logout</a>
+

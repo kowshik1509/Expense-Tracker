@@ -187,6 +187,67 @@ def logout():
     return redirect("/ExpenseTracker/Login")
 
 
+
+# ------------------- ADMIN ----------------------------
+from common.config import get_connection
+
+# ---------------- ADMIN LOGIN ----------------
+@app.route("/ExpenseTracker/Admin/Login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "GET":
+        return render_template("admin_login.html")
+
+    username = request.form["username"]
+    password = request.form["password"]
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT 1 FROM et_admins
+        WHERE admin_username=%s AND admin_password=%s
+    """, (username, password))
+
+    if not cur.fetchone():
+        return render_template(
+            "admin_login.html",
+            error="Invalid admin credentials"
+        )
+
+    session["admin"] = username
+    return redirect("/ExpenseTracker/Admin/Dashboard")
+
+@app.route("/ExpenseTracker/Admin/Dashboard")
+def admin_dashboard():
+    if "admin" not in session:
+        return redirect("/ExpenseTracker/Admin/Login")
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+
+    # ✅ Allowed: metadata only
+    cur.execute("SELECT COUNT(*) FROM et_users")
+    total_users = cur.fetchone()[0]
+
+    cur.execute("""
+        SELECT DATE(created_at), COUNT(*)
+        FROM et_users
+        GROUP BY DATE(created_at)
+        ORDER BY DATE(created_at) DESC
+        LIMIT 7
+    """)
+    new_users = cur.fetchall()
+
+    return render_template(
+        "admin_dashboard.html",
+        total_users=total_users,
+        new_users=new_users
+    )
+@app.route("/ExpenseTracker/Admin/Logout")
+def admin_logout():
+    session.pop("admin", None)
+    return redirect("/ExpenseTracker/Login")
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 9877))
     app.run(host="0.0.0.0", port=port)
