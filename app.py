@@ -229,20 +229,24 @@ def admin_dashboard():
     cur.execute("SELECT COUNT(*) FROM et_users")
     total_users = cur.fetchone()[0]
 
-    # Users with registration date
+    # ALL users (SAFE FIELDS ONLY)
     cur.execute("""
-        SELECT user_name, created_at
+        SELECT user_id, user_name, created_at
         FROM et_users
-        ORDER BY created_at DESC
-        LIMIT 10
     """)
-    users = cur.fetchall()
+    users = [
+        {"id": r[0], "name": r[1], "created": r[2]}
+        for r in cur.fetchall()
+    ]
+
+
 
     return render_template(
         "admin_dashboard.html",
         total_users=total_users,
         users=users
     )
+
 
 @app.route("/ExpenseTracker/Admin/Logout")
 def admin_logout():

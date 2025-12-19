@@ -101,14 +101,15 @@
     <th>Registered On</th>
   </tr>
 
-  {% for user_id, user_name, created_at in users %}
+  {% for u in users %}
   <tr>
-    <td>{{ user_id }}</td>
-    <td>{{ user_name }}</td>
-    <td>{{ created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+    <td>{{ u.id }}</td>
+    <td>{{ u.name }}</td>
+    <td>{{ u.created.strftime("%Y-%m-%d %H:%M") }}</td>
   </tr>
   {% endfor %}
 </table>
+
 
     {% if session.admin %}
       <a class="create" href="/ExpenseTracker/Admin/Create">
