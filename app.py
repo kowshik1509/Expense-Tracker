@@ -13,10 +13,12 @@ from resources.app_operations import ensure_tables_exist
 app = Flask(__name__)
 app.secret_key = "expense_tracker_secret"  
 
+# Create Required tables
 @app.before_first_request
 def init_db():
     ensure_tables_exist()
 
+# App homw 
 @app.route("/ExpenseTracker/Home")
 def home():
     if "user" not in session:
@@ -50,7 +52,7 @@ def home():
         grand_total=grand_total
     )
 
-
+# App login route
 @app.route("/ExpenseTracker/Login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -70,7 +72,7 @@ def login():
     return redirect("/ExpenseTracker/Home")
 
 
-# ---------------- CREATE USER ----------------
+# New user creation route
 @app.route("/ExpenseTracker/Createuser", methods=["GET", "POST"])
 def create_user():
     
@@ -93,7 +95,7 @@ def create_user():
 
 
 
-# ---------------- ADD EXPENSE ----------------
+# Expense Adding 
 @app.route("/ExpenseTracker/AddExpense", methods=["GET", "POST"])
 def add_expense():
     if "user" not in session:
@@ -123,7 +125,7 @@ def add_expense():
 
 
 
-# ---------------- GET EXPENSES ----------------
+# Retriving Expenses
 @app.route("/ExpenseTracker/GetExpenses", methods=["GET", "POST"])
 def get_expenses():
     if "user" not in session:
@@ -147,14 +149,13 @@ def get_expenses():
         flash(res.get("error"), "error")
         return render_template("get_expenses.html")
 
-    # PASS DATAFRAME DATA TO TEMPLATE
     return render_template(
         "get_expenses.html",
         expenses=res["data"]
     )
 
 
-
+# Deleting Expenses 
 @app.route("/ExpenseTracker/DeleteOldExpenses", methods=["GET", "POST"])
 def delete_expenses():
     if "user" not in session:
@@ -180,18 +181,18 @@ def delete_expenses():
 
     return render_template("delete_expenses.html")
 
-
+# Logout -> Login page
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/ExpenseTracker/Login")
 
 
+# ==================================================================================
+#                            ADMIN 
+#===================================================================================
 
-# ------------------- ADMIN ----------------------------
-from common.config import get_connection
-
-# ---------------- ADMIN LOGIN ----------------
+# Admin app login
 @app.route("/ExpenseTracker/Admin/Login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "GET":
@@ -217,6 +218,7 @@ def admin_login():
     session["admin"] = username
     return redirect("/ExpenseTracker/Admin/Dashboard")
 
+# Admin app dashboard / home
 @app.route("/ExpenseTracker/Admin/Dashboard")
 def admin_dashboard():
     if "admin" not in session:
@@ -225,7 +227,6 @@ def admin_dashboard():
     conn = get_connection("EXPT")
     cur = conn.cursor()
 
-    # ================= USERS =================
     cur.execute("SELECT COUNT(*) FROM et_users")
     total_users = cur.fetchone()[0]
 
@@ -239,7 +240,6 @@ def admin_dashboard():
         for r in cur.fetchall()
     ]
 
-    # ================= ADMINS =================
     cur.execute("SELECT COUNT(*) FROM et_admins")
     total_admins = cur.fetchone()[0]
 
@@ -264,7 +264,7 @@ def admin_dashboard():
         admins=admins
     )
 
-
+# New Admin creation
 @app.route("/ExpenseTracker/Admin/Create", methods=["GET", "POST"])
 def admin_create():
     if "admin" not in session:
@@ -301,6 +301,7 @@ def admin_create():
         message=message
     )
 
+# Deleting Existing user
 @app.route("/ExpenseTracker/Admin/DeleteUser", methods=["GET", "POST"])
 def admin_delete_user():
     if "admin" not in session:
@@ -338,7 +339,7 @@ def admin_delete_user():
         "admin_user_delete.html",
         message=message
     )
-
+# Deleting Exisiting Admin
 @app.route("/ExpenseTracker/Admin/DeleteAdmin", methods=["GET", "POST"])
 def admin_delete_admin():
     if "admin" not in session:
@@ -377,7 +378,7 @@ def admin_delete_admin():
         message=message
     )
 
-
+# Admin app logout -> user app login 
 @app.route("/ExpenseTracker/Admin/Logout")
 def admin_logout():
     session.pop("admin", None)
