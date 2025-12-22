@@ -335,7 +335,7 @@ def admin_delete_user():
         conn.close()
 
     return render_template(
-        "admin_delete_user.html",
+        "admin_user_delete.html",
         message=message
     )
 
