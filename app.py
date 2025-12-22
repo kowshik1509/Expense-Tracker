@@ -301,6 +301,82 @@ def admin_create():
         message=message
     )
 
+@app.route("/ExpenseTracker/Admin/DeleteUser", methods=["GET", "POST"])
+def admin_delete_user():
+    if "admin" not in session:
+        return redirect("/ExpenseTracker/Admin/Login")
+
+    if request.method == "GET":
+        return render_template("admin_user_delete.html")
+
+    user_id = request.form["user_id"].strip()
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+
+    try:
+        cur.execute(
+            "DELETE FROM et_users WHERE user_id = %s",
+            (user_id,)
+        )
+
+        if cur.rowcount == 0:
+            message = "User not found"
+        else:
+            conn.commit()
+            message = "User deleted successfully"
+
+    except Exception as e:
+        conn.rollback()
+        message = "Error deleting user"
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return render_template(
+        "admin_delete_user.html",
+        message=message
+    )
+
+@app.route("/ExpenseTracker/Admin/DeleteAdmin", methods=["GET", "POST"])
+def admin_delete_admin():
+    if "admin" not in session:
+        return redirect("/ExpenseTracker/Admin/Login")
+
+    if request.method == "GET":
+        return render_template("admin_delete_admin.html")
+
+    admin_id = request.form["admin_id"].strip()
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+
+    try:
+        cur.execute(
+            "DELETE FROM et_admins WHERE admin_id = %s",
+            (admin_id,)
+        )
+
+        if cur.rowcount == 0:
+            message = "Admin not found"
+        else:
+            conn.commit()
+            message = "Admin deleted successfully"
+
+    except Exception:
+        conn.rollback()
+        message = "Error deleting admin"
+
+    finally:
+        cur.close()
+        conn.close()
+
+    return render_template(
+        "admin_delete_admin.html",
+        message=message
+    )
+
 
 @app.route("/ExpenseTracker/Admin/Logout")
 def admin_logout():
