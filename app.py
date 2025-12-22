@@ -13,12 +13,22 @@ from resources.app_operations import ensure_tables_exist
 app = Flask(__name__)
 app.secret_key = "expense_tracker_secret"  
 
-# Create Required tables
+#=============================================================================================================
+#                            Tables creation in Database 
+#=============================================================================================================
+
+
+#  ---------------------- Create Required tables -----------------------------------------------------
 @app.before_first_request
 def init_db():
     ensure_tables_exist()
 
-# App homw 
+#=============================================================================================================
+#                             Expense Tracker App
+#=============================================================================================================
+
+
+# -------------------------- App home ----------------------------------------
 @app.route("/ExpenseTracker/Home")
 def home():
     if "user" not in session:
@@ -52,7 +62,7 @@ def home():
         grand_total=grand_total
     )
 
-# App login route
+# ------------------------------ App login route -------------------------------------------
 @app.route("/ExpenseTracker/Login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -72,7 +82,7 @@ def login():
     return redirect("/ExpenseTracker/Home")
 
 
-# New user creation route
+# -------------------- New user creation route ---------------------------------------
 @app.route("/ExpenseTracker/Createuser", methods=["GET", "POST"])
 def create_user():
     
@@ -95,7 +105,7 @@ def create_user():
 
 
 
-# Expense Adding 
+# ---------------------------- Expense Adding ----------------------------------
 @app.route("/ExpenseTracker/AddExpense", methods=["GET", "POST"])
 def add_expense():
     if "user" not in session:
@@ -125,7 +135,7 @@ def add_expense():
 
 
 
-# Retriving Expenses
+# ------------------------ Retriving Expenses --------------------------------
 @app.route("/ExpenseTracker/GetExpenses", methods=["GET", "POST"])
 def get_expenses():
     if "user" not in session:
@@ -155,7 +165,7 @@ def get_expenses():
     )
 
 
-# Deleting Expenses 
+# ------------------------------- Deleting Expenses ---------------------------------
 @app.route("/ExpenseTracker/DeleteOldExpenses", methods=["GET", "POST"])
 def delete_expenses():
     if "user" not in session:
@@ -181,8 +191,8 @@ def delete_expenses():
 
     return render_template("delete_expenses.html")
 
-# Logout -> Login page
-@app.route("/logout")
+# ---------------------- Logout -> Login page ---------------------------------------------
+@app.route("/ExpenseTracker/logout")
 def logout():
     session.clear()
     return redirect("/ExpenseTracker/Login")
@@ -192,7 +202,7 @@ def logout():
 #                            ADMIN 
 #===================================================================================
 
-# Admin app login
+# ------------------------------ Admin app login ----------------------------------------
 @app.route("/ExpenseTracker/Admin/Login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "GET":
@@ -218,7 +228,7 @@ def admin_login():
     session["admin"] = username
     return redirect("/ExpenseTracker/Admin/Dashboard")
 
-# Admin app dashboard / home
+# ---------------------------- Admin app dashboard / home ---------------------------------------------
 @app.route("/ExpenseTracker/Admin/Dashboard")
 def admin_dashboard():
     if "admin" not in session:
@@ -264,7 +274,7 @@ def admin_dashboard():
         admins=admins
     )
 
-# New Admin creation
+# --------------------------------------- New Admin creation ---------------------------------------------
 @app.route("/ExpenseTracker/Admin/Create", methods=["GET", "POST"])
 def admin_create():
     if "admin" not in session:
@@ -301,7 +311,7 @@ def admin_create():
         message=message
     )
 
-# Deleting Existing user
+# ------------------------------ Deleting Existing user ----------------------------------------------------
 @app.route("/ExpenseTracker/Admin/DeleteUser", methods=["GET", "POST"])
 def admin_delete_user():
     if "admin" not in session:
@@ -339,7 +349,9 @@ def admin_delete_user():
         "admin_user_delete.html",
         message=message
     )
-# Deleting Exisiting Admin
+
+
+# ------------------------------- Deleting Exisiting Admin -----------------------------------------------------
 @app.route("/ExpenseTracker/Admin/DeleteAdmin", methods=["GET", "POST"])
 def admin_delete_admin():
     if "admin" not in session:
@@ -378,13 +390,17 @@ def admin_delete_admin():
         message=message
     )
 
-# Admin app logout -> user app login 
+# --------------------------------- Admin app logout -> user app login ----------------------------------------------------------
 @app.route("/ExpenseTracker/Admin/Logout")
 def admin_logout():
     session.pop("admin", None)
     return redirect("/ExpenseTracker/Login")
 
 
+#====================================================================================================
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 9877))
     app.run(host="0.0.0.0", port=port)
+
+#======================================================================================================

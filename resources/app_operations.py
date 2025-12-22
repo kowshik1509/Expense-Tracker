@@ -10,6 +10,9 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", datefmt='%Y-%m-%d %H:%M:%S')
 from common.config import get_connection
 
+#==================================================================================================
+#                                   Expense Tracker App
+#==================================================================================================
 class LoginUser(Resource):
     def post(self, data=None):
         if data is None:
@@ -276,6 +279,9 @@ class DeleteOldExpenses(Resource):
         }, 200
 
 
+#====================================================================================================
+#                                   Tables creation in database 
+#====================================================================================================
 def ensure_tables_exist():
     conn = get_connection("EXPT")
     cursor = conn.cursor()
