@@ -235,7 +235,7 @@ class GetExpenses(Resource):
         return {"data": result}, 200
 
 
-class DeleteExpenses(Resource):
+class DeleteOldExpenses(Resource):
     def post(self):
         data = request.get_json(force=True, silent=True) or {}
 
