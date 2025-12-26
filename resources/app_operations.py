@@ -235,48 +235,112 @@ class GetExpenses(Resource):
         return {"data": result}, 200
 
 
-class DeleteOldExpenses(Resource):
-    def post(self, data=None):
-        if data is None:
-            data = request.get_json()
+class DeleteExpenses(Resource):
+    def post(self):
+        data = request.get_json(force=True, silent=True) or {}
 
         conn = get_connection("EXPT")
         cursor = conn.cursor()
 
         user_name = data.get("USER_NAME")
         password = data.get("PASSWORD")
+        params = data.get("PARAMS", {}) or {}
 
-        params = data.get("PARAMS", {})
-        before_date = params.get("BEFORE_DATE")
+        delete_type = params.get("DELETE_TYPE")
 
         if not user_name or not password:
             return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-        if not before_date:
-            return {"error": "PARAMS must include BEFORE_DATE"}, 400
+        if not delete_type:
+            return {"error": "DELETE_TYPE is required"}, 400
 
-        query = "SELECT user_id, user_password FROM et_users WHERE user_name = %s"
-        df = pd.read_sql(query, conn, params=[user_name])
+        # ---- Authenticate user ----
+        user_row = pd.read_sql(
+            """
+            SELECT user_id, user_password
+            FROM et_users
+            WHERE user_name = %s
+            """,
+            conn,
+            params=[user_name],
+        )
 
-        if df.empty:
+        if user_row.empty:
             return {"error": "User not found"}, 404
 
-        if df.iloc[0]["user_password"] != password:
+        if user_row.iloc[0]["user_password"] != password:
             return {"error": "Incorrect password"}, 401
 
-        delete_query = """
+        # ---- Base delete filter ----
+        sql = """
             DELETE FROM expense_logs
             WHERE user_name = %s
-              AND log_creation_date::date < %s
         """
+        args = [user_name]
 
-        cursor.execute(delete_query, (user_name, before_date))
-        deleted_count = cursor.rowcount
-        conn.commit()
+        # ---- Delete Before Date ----
+        if delete_type == "before_date":
+            before_date = params.get("BEFORE_DATE")
+            if not before_date:
+                return {"error": "BEFORE_DATE is required"}, 400
+
+            sql += " AND log_creation_date::date < %s"
+            args.append(before_date)
+
+        # ---- Delete Between Date Range ----
+        elif delete_type == "date_range":
+            from_date = params.get("FROM_DATE")
+            to_date = params.get("TO_DATE")
+
+            if not from_date or not to_date:
+                return {"error": "FROM_DATE and TO_DATE are required"}, 400
+
+            sql += " AND log_creation_date::date BETWEEN %s AND %s"
+            args.extend([from_date, to_date])
+
+        # ---- Delete Specific Entry ----
+        elif delete_type == "specific_entry":
+            entry_value = params.get("ENTRY_VALUE")
+            if not entry_value:
+                return {"error": "ENTRY_VALUE is required"}, 400
+
+            # Try numeric ID first, fallback to text match
+            try:
+                expense_id = int(entry_value)
+                sql += " AND expense_id = %s"
+                args.append(expense_id)
+            except ValueError:
+                sql += """
+                    AND (
+                        COALESCE(description,'') ILIKE %s
+                        OR COALESCE(category,'') ILIKE %s
+                    )
+                """
+                like_val = f"%{entry_value}%"
+                args.extend([like_val, like_val])
+
+        else:
+            return {"error": "Invalid DELETE_TYPE value"}, 400
+
+        # ---- Execute deletion safely ----
+        try:
+            cursor.execute(sql, tuple(args))
+            deleted_count = cursor.rowcount
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            return {"error": f"Deletion failed: {str(e)}"}, 500
+        finally:
+            cursor.close()
+            conn.close()
 
         return {
-            "message": f"Deleted {deleted_count} expenses before {before_date}"
+            "message": f"{deleted_count} expense record(s) deleted",
+            "delete_type": delete_type,
+            "deleted_count": deleted_count
         }, 200
+
+
 
 
 #====================================================================================================
