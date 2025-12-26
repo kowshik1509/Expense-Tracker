@@ -174,12 +174,27 @@ def delete_expenses():
     if request.method == "GET":
         return render_template("delete_expenses.html")
 
+    delete_type = request.form["delete_type"]
+
+    params = {}
+
+    if delete_type == "before_date":
+        params["MODE"] = "BEFORE_DATE"
+        params["BEFORE_DATE"] = request.form.get("before_date")
+
+    elif delete_type == "date_range":
+        params["MODE"] = "DATE_RANGE"
+        params["FROM_DATE"] = request.form.get("from_date")
+        params["TO_DATE"] = request.form.get("to_date")
+
+    elif delete_type == "specific_entry":
+        params["MODE"] = "SPECIFIC_ENTRY"
+        params["ENTRY_VALUE"] = request.form.get("entry_value")
+
     data = {
-        "USER_NAME":session["user"],
+        "USER_NAME": session["user"],
         "PASSWORD": request.form["password"],
-        "PARAMS": {
-            "BEFORE_DATE": request.form["before_date"]
-        }
+        "PARAMS": params
     }
 
     res, status = DeleteOldExpenses().post(data)
@@ -190,6 +205,7 @@ def delete_expenses():
         flash(res.get("message"), "success")
 
     return render_template("delete_expenses.html")
+
 
 # ---------------------- Logout -> Login page ---------------------------------------------
 @app.route("/ExpenseTracker/logout")

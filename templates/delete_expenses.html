@@ -4,138 +4,169 @@
 
 <style>
   :root {
-    --danger: #dc2626;
-    --danger-dark: #b91c1c;
-    --danger-soft: #fee2e2;
-
-    --border: #e5e7eb;
-    --text-main: #1f2937;
-    --text-muted: #6b7280;
+    --danger:#dc2626;
+    --danger-dark:#b91c1c;
+    --danger-soft:#fee2e2;
+    --border:#e5e7eb;
+    --text-main:#1f2937;
+    --text-muted:#6b7280;
   }
 
-  /* ===== PAGE BACKGROUND (WARNING / DESTRUCTIVE) ===== */
   .delete-expense-bg {
-    width: 100%;
-    min-height: calc(100vh - 72px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+    width:100%;
+    min-height:calc(100vh - 72px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
     background:
-      linear-gradient(
-        rgba(254,226,226,0.92),
-        rgba(254,226,226,0.92)
-      ),
+      linear-gradient(rgba(254,226,226,.92),rgba(254,226,226,.92)),
       url("https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80");
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-size:cover;
+    background-position:center;
   }
 
-  /* ===== CARD ===== */
   .expense-card {
-    background: #ffffff;
-    width: 420px;
-    padding: 36px;
-    border-radius: 18px;
-    box-shadow: 0 24px 50px rgba(220,38,38,0.28);
-    text-align: center;
-    animation: fadeIn 0.35s ease-in-out;
+    background:#fff;
+    width:440px;
+    padding:38px;
+    border-radius:18px;
+    box-shadow:0 24px 50px rgba(220,38,38,.28);
+    text-align:center;
+    animation:fadeIn .35s ease-in-out;
   }
 
-  .expense-title {
-    font-size: 24px;
-    font-weight: 900;
-    color: var(--danger);
-    margin-bottom: 6px;
+  .expense-title{
+    font-size:24px;
+    font-weight:900;
+    color:var(--danger);
+    margin-bottom:8px;
   }
 
-  .expense-subtitle {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 26px;
+  .expense-subtitle{
+    font-size:14px;
+    color:var(--text-muted);
+    margin-bottom:26px;
   }
 
-  label {
-    display: block;
-    text-align: left;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 6px;
+  label{
+    display:block;
+    text-align:left;
+    font-size:13px;
+    font-weight:800;
+    color:var(--text-main);
+    margin-bottom:6px;
   }
 
-  input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 18px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    font-size: 14px;
-    outline: none;
+  input,select{
+    width:100%;
+    padding:12px;
+    margin-bottom:18px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    font-size:14px;
+    outline:none;
+    background:#fff;
+    transition:.2s;
   }
 
-  input:focus {
-    border-color: var(--danger);
-    box-shadow: 0 0 0 3px rgba(220,38,38,0.2);
+  input:focus,select:focus{
+    border-color:var(--danger);
+    box-shadow:0 0 0 3px rgba(220,38,38,.2);
   }
 
-  button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--danger), var(--danger-dark));
-    color: white;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  select{
+    appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg fill='%23dc2626' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat:no-repeat;
+    background-position:calc(100% - 14px) center;
+    background-size:18px;
+    cursor:pointer;
   }
 
-  button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 12px 22px rgba(220,38,38,0.4);
+  .field-box{
+    padding:14px;
+    border:1px dashed #fca5a5;
+    border-radius:12px;
+    background:#fff7f7;
+    margin-bottom:16px;
+    animation:fadeIn .25s ease;
   }
 
-  .warning {
-    margin-top: 20px;
-    padding: 14px;
-    border-radius: 12px;
-    background: var(--danger-soft);
-    color: var(--danger-dark);
-    font-size: 13px;
-    font-weight: 800;
+  button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg,var(--danger),var(--danger-dark));
+    color:#fff;
+    font-size:15px;
+    font-weight:900;
+    cursor:pointer;
+    transition:.2s;
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  button:hover{
+    transform:translateY(-1px);
+    box-shadow:0 12px 22px rgba(220,38,38,.4);
+  }
+
+  .warning{
+    margin-top:20px;
+    padding:14px;
+    border-radius:12px;
+    background:var(--danger-soft);
+    color:var(--danger-dark);
+    font-size:13px;
+    font-weight:900;
+  }
+
+  @keyframes fadeIn{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:translateY(0)}
   }
 </style>
 
 <div class="delete-expense-bg">
   <div class="expense-card">
+
     <div class="expense-title">🗑️ Delete Expenses</div>
-    <div class="expense-subtitle">
-      Permanently remove expenses before a selected date
-    </div>
+    <div class="expense-subtitle">Choose how you want to delete expenses</div>
 
     <form method="POST">
-      <label for="before_date">Delete expenses before</label>
-      <input id="before_date" type="date" name="before_date" required>
 
+      <!-- Delete Type -->
+      <label for="delete_type">Delete Type</label>
+      <select id="delete_type" name="delete_type" required>
+        <option value="">-- Select delete option --</option>
+        <option value="before_date">Before a Specific Date</option>
+        <option value="date_range">Between Date Range</option>
+        <option value="specific_entry">Specific Entry</option>
+      </select>
+
+      <!-- Before Date -->
+      <div id="beforeDateBox" class="field-box" style="display:none;">
+        <label for="before_date">Delete expenses before</label>
+        <input id="before_date" type="date" name="before_date">
+      </div>
+
+      <!-- Date Range -->
+      <div id="dateRangeBox" class="field-box" style="display:none;">
+        <label>Delete expenses between</label>
+        <input type="date" name="from_date">
+        <input type="date" name="to_date">
+      </div>
+
+      <!-- Specific Entry -->
+      <div id="specificEntryBox" class="field-box" style="display:none;">
+        <label for="entry_value">Delete specific entry</label>
+        <input id="entry_value" type="text" name="entry_value" placeholder="Enter Entry ID / Name / Ref">
+      </div>
+
+      <!-- Password -->
       <label for="password">Confirm password</label>
       <input id="password" type="password" name="password" placeholder="Enter your password" required>
 
-      <button type="submit">Delete Expenses</button>
+      <button type="submit">Delete</button>
     </form>
 
     <div class="warning">
@@ -143,5 +174,22 @@
     </div>
   </div>
 </div>
+
+<script>
+const select = document.getElementById("delete_type");
+const beforeBox = document.getElementById("beforeDateBox");
+const rangeBox = document.getElementById("dateRangeBox");
+const entryBox = document.getElementById("specificEntryBox");
+
+select.addEventListener("change", () => {
+  beforeBox.style.display = "none";
+  rangeBox.style.display = "none";
+  entryBox.style.display = "none";
+
+  if(select.value === "before_date") beforeBox.style.display = "block";
+  if(select.value === "date_range") rangeBox.style.display = "block";
+  if(select.value === "specific_entry") entryBox.style.display = "block";
+});
+</script>
 
 {% endblock %}
