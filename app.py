@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, flash
-from resources.app_operations import AddExpense, CreateUser, GetExpenses,DeleteOldExpenses, LoginUser,DashboardSummary
+from resources.app_operations import AddExpense, CreateUser, GetExpenses,DeleteExpense, LoginUser,DashboardSummary
 
 from flask import render_template, request, redirect, session
 import pandas as pd
@@ -176,19 +176,16 @@ def delete_expenses():
 
     delete_type = request.form["delete_type"]
 
-    params = {}
+    params = {"DELETE_TYPE": delete_type}
 
     if delete_type == "before_date":
-        params["MODE"] = "BEFORE_DATE"
         params["BEFORE_DATE"] = request.form.get("before_date")
 
     elif delete_type == "date_range":
-        params["MODE"] = "DATE_RANGE"
         params["FROM_DATE"] = request.form.get("from_date")
         params["TO_DATE"] = request.form.get("to_date")
 
     elif delete_type == "specific_entry":
-        params["MODE"] = "SPECIFIC_ENTRY"
         params["ENTRY_VALUE"] = request.form.get("entry_value")
 
     data = {
@@ -197,7 +194,7 @@ def delete_expenses():
         "PARAMS": params
     }
 
-    res, status = DeleteOldExpenses().post(data)
+    res, status = DeleteExpense(data)
 
     if status != 200:
         flash(res.get("error"), "error")
@@ -205,6 +202,7 @@ def delete_expenses():
         flash(res.get("message"), "success")
 
     return render_template("delete_expenses.html")
+
 
 
 # ---------------------- Logout -> Login page ---------------------------------------------

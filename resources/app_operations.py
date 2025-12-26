@@ -235,110 +235,103 @@ class GetExpenses(Resource):
         return {"data": result}, 200
 
 
-class DeleteOldExpenses(Resource):
-    def post(self):
-        data = request.get_json(force=True, silent=True) or {}
+def DeleteExpense(data):
+    conn = get_connection("EXPT")
+    cursor = conn.cursor()
 
-        conn = get_connection("EXPT")
-        cursor = conn.cursor()
+    user_name = data.get("USER_NAME")
+    password = data.get("PASSWORD")
+    params = data.get("PARAMS", {}) or {}
 
-        user_name = data.get("USER_NAME")
-        password = data.get("PASSWORD")
-        params = data.get("PARAMS", {}) or {}
+    delete_type = params.get("DELETE_TYPE") or params.get("MODE")
 
-        delete_type = params.get("DELETE_TYPE")
+    if not user_name or not password:
+        return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-        if not user_name or not password:
-            return {"error": "USER_NAME and PASSWORD are required"}, 400
+    if not delete_type:
+        return {"error": "DELETE_TYPE / MODE is required"}, 400
 
-        if not delete_type:
-            return {"error": "DELETE_TYPE is required"}, 400
-
-        # ---- Authenticate user ----
-        user_row = pd.read_sql(
-            """
-            SELECT user_id, user_password
-            FROM et_users
-            WHERE user_name = %s
-            """,
-            conn,
-            params=[user_name],
-        )
-
-        if user_row.empty:
-            return {"error": "User not found"}, 404
-
-        if user_row.iloc[0]["user_password"] != password:
-            return {"error": "Incorrect password"}, 401
-
-        # ---- Base delete filter ----
-        sql = """
-            DELETE FROM expense_logs
-            WHERE user_name = %s
+    # ---- Authenticate user ----
+    user_row = pd.read_sql(
         """
-        args = [user_name]
+        SELECT user_id, user_password
+        FROM et_users
+        WHERE user_name = %s
+        """,
+        conn,
+        params=[user_name],
+    )
 
-        # ---- Delete Before Date ----
-        if delete_type == "before_date":
-            before_date = params.get("BEFORE_DATE")
-            if not before_date:
-                return {"error": "BEFORE_DATE is required"}, 400
+    if user_row.empty:
+        return {"error": "User not found"}, 404
 
-            sql += " AND log_creation_date::date < %s"
-            args.append(before_date)
+    if user_row.iloc[0]["user_password"] != password:
+        return {"error": "Incorrect password"}, 401
 
-        # ---- Delete Between Date Range ----
-        elif delete_type == "date_range":
-            from_date = params.get("FROM_DATE")
-            to_date = params.get("TO_DATE")
+    # ---- Base delete filter ----
+    sql = """
+        DELETE FROM expense_logs
+        WHERE user_name = %s
+    """
+    args = [user_name]
 
-            if not from_date or not to_date:
-                return {"error": "FROM_DATE and TO_DATE are required"}, 400
+    # ---- Before Date ----
+    if delete_type.lower() == "before_date":
+        before_date = params.get("BEFORE_DATE")
+        if not before_date:
+            return {"error": "BEFORE_DATE is required"}, 400
+        sql += " AND log_creation_date::date < %s"
+        args.append(before_date)
 
-            sql += " AND log_creation_date::date BETWEEN %s AND %s"
-            args.extend([from_date, to_date])
+    # ---- Date Range ----
+    elif delete_type.lower() == "date_range":
+        from_date = params.get("FROM_DATE")
+        to_date = params.get("TO_DATE")
+        if not from_date or not to_date:
+            return {"error": "FROM_DATE and TO_DATE are required"}, 400
+        sql += " AND log_creation_date::date BETWEEN %s AND %s"
+        args.extend([from_date, to_date])
 
-        # ---- Delete Specific Entry ----
-        elif delete_type == "specific_entry":
-            entry_value = params.get("ENTRY_VALUE")
-            if not entry_value:
-                return {"error": "ENTRY_VALUE is required"}, 400
-
-            # Try numeric ID first, fallback to text match
-            try:
-                expense_id = int(entry_value)
-                sql += " AND expense_id = %s"
-                args.append(expense_id)
-            except ValueError:
-                sql += """
-                    AND (
-                        COALESCE(description,'') ILIKE %s
-                        OR COALESCE(category,'') ILIKE %s
-                    )
-                """
-                like_val = f"%{entry_value}%"
-                args.extend([like_val, like_val])
-
-        else:
-            return {"error": "Invalid DELETE_TYPE value"}, 400
-
-        # ---- Execute deletion safely ----
+    # ---- Specific Entry ----
+    elif delete_type.lower() == "specific_entry":
+        entry_value = params.get("ENTRY_VALUE")
+        if not entry_value:
+            return {"error": "ENTRY_VALUE is required"}, 400
         try:
-            cursor.execute(sql, tuple(args))
-            deleted_count = cursor.rowcount
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            return {"error": f"Deletion failed: {str(e)}"}, 500
-        finally:
-            cursor.close()
-            conn.close()
+            expense_id = int(entry_value)
+            sql += " AND expense_id = %s"
+            args.append(expense_id)
+        except ValueError:
+            sql += """
+                AND (
+                    COALESCE(description,'') ILIKE %s
+                    OR COALESCE(category,'') ILIKE %s
+                )
+            """
+            like_val = f"%{entry_value}%"
+            args.extend([like_val, like_val])
 
-        return {
-            "message": f"{deleted_count} expense record(s) deleted",
-            "delete_type": delete_type,
-            "deleted_count": deleted_count
-        }, 200
+    else:
+        return {"error": "Invalid DELETE_TYPE value"}, 400
+
+    # ---- Execute ----
+    try:
+        cursor.execute(sql, tuple(args))
+        deleted_count = cursor.rowcount
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        return {"error": f"Deletion failed: {str(e)}"}, 500
+    finally:
+        cursor.close()
+        conn.close()
+
+    return {
+        "message": f"{deleted_count} expense record(s) deleted",
+        "delete_type": delete_type,
+        "deleted_count": deleted_count
+    }, 200
+
 
 
 
