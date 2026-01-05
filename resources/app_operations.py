@@ -1,41 +1,35 @@
-from flask_restful import Resource, request
+from flask_restful import Resource
 from flask import request
-
 import pandas as pd
-import numpy as np
-from common.config import logger
-import logging
-import datetime
+from common.config import get_connection, logger
 from datetime import datetime
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", datefmt='%Y-%m-%d %H:%M:%S')
-from common.config import get_connection
 
-#==================================================================================================
-#                                   Expense Tracker App
-#==================================================================================================
+
 class LoginUser(Resource):
     def post(self, data=None):
         if data is None:
             data = request.get_json()
 
         conn = get_connection("EXPT")
+        user = data.get("USER_NAME")
+        pwd = data.get("PASSWORD")
 
-        user_name = data.get("USER_NAME")
-        password = data.get("PASSWORD")
-
-        if not user_name or not password:
+        if not user or not pwd:
             return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-        query = "SELECT user_password FROM et_users WHERE user_name = %s"
-        df = pd.read_sql(query, conn, params=[user_name])
+        df = pd.read_sql(
+            "SELECT user_password FROM et_users WHERE user_name=%s",
+            conn, params=[user]
+        )
 
         if df.empty:
             return {"error": "User not found"}, 404
 
-        if df.iloc[0]["user_password"] != password:
+        if df.iloc[0]["user_password"] != pwd:
             return {"error": "Invalid password"}, 401
 
         return {"message": "Login successful"}, 200
+
 
 class DashboardSummary(Resource):
     def post(self, data=None):
@@ -43,45 +37,39 @@ class DashboardSummary(Resource):
             data = request.get_json()
 
         conn = get_connection("EXPT")
+        user = data.get("USER_NAME")
+        pwd = data.get("PASSWORD")
 
-        user_name = data.get("USER_NAME")
-        password = data.get("PASSWORD")
-
-        if not user_name or not password:
+        if not user or not pwd:
             return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-        # Validate user
-        query = "SELECT user_password FROM et_users WHERE user_name = %s"
-        df = pd.read_sql(query, conn, params=[user_name])
+        df = pd.read_sql(
+            "SELECT user_password FROM et_users WHERE user_name=%s",
+            conn, params=[user]
+        )
 
         if df.empty:
             return {"error": "User not found"}, 404
 
-        if df.iloc[0]["user_password"] != password:
+        if df.iloc[0]["user_password"] != pwd:
             return {"error": "Incorrect password"}, 401
 
-        # Aggregate expenses
-        agg_query = """
-            SELECT category, SUM(amount) AS total
+        df = pd.read_sql("""
+            SELECT category, SUM(amount) total
             FROM expense_logs
-            WHERE user_name = %s
+            WHERE user_name=%s
             GROUP BY category
-        """
+        """, conn, params=[user])
 
-        df_summary = pd.read_sql(agg_query, conn, params=[user_name])
-
-        if df_summary.empty:
+        if df.empty:
             return {"categories": [], "totals": [], "grand_total": 0}, 200
 
-        categories = df_summary["category"].tolist()
-        totals = df_summary["total"].astype(float).tolist()
-        grand_total = float(df_summary["total"].sum())
-
         return {
-            "categories": categories,
-            "totals": totals,
-            "grand_total": grand_total
+            "categories": df["category"].tolist(),
+            "totals": df["total"].astype(float).tolist(),
+            "grand_total": float(df["total"].sum())
         }, 200
+
 
 class AddExpense(Resource):
     def post(self, data=None):
@@ -89,55 +77,36 @@ class AddExpense(Resource):
             data = request.get_json()
 
         conn = get_connection("EXPT")
-        cursor = conn.cursor()
+        cur = conn.cursor()
 
-        user_name = data.get("USER_NAME")
-        password = data.get("PASSWORD")
+        user = data.get("USER_NAME")
+        pwd = data.get("PASSWORD")
+        p = data.get("PARAMS", {})
 
-        params = data.get("PARAMS", {})
-        category = params.get("CATEGORY")
-        description = params.get("DESCRIPTION")
-        amount = params.get("AMOUNT")
-
-        # Validate mandatory fields
-        if not all([user_name, password]):
-            logger.debug("USER_NAME and PASSWORD are required")
+        if not user or not pwd:
             return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-        if not all([category, description, amount]):
-            logger.debug("PARAMS must include CATEGORY, DESCRIPTION, AMOUNT")
-            return {"error": "PARAMS must include CATEGORY, DESCRIPTION, AMOUNT"}, 400
+        if not all([p.get("CATEGORY"), p.get("DESCRIPTION"), p.get("AMOUNT")]):
+            return {"error": "Missing CATEGORY / DESCRIPTION / AMOUNT"}, 400
 
-        # Check user
-        query = "SELECT user_id, user_name, user_password FROM et_users WHERE user_name = %s"
-        df = pd.read_sql(query, conn, params=[user_name])
+        df = pd.read_sql(
+            "SELECT user_password FROM et_users WHERE user_name=%s",
+            conn, params=[user]
+        )
 
         if df.empty:
-            logger.debug("User not found")
-            return {"message": "User not found"}, 404
+            return {"error": "User not found"}, 404
 
-        row = df.iloc[0]
+        if df.iloc[0]["user_password"] != pwd:
+            return {"error": "Incorrect password"}, 401
 
-        if row["user_password"] != password:
-            logger.debug("Password incorrect ")
-            return {"message": "Incorrect password"}, 401
-
-        user_id = int(row["user_id"])
-
-        # Insert expense log
-        login_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        insert_query = """
+        cur.execute("""
             INSERT INTO expense_logs (user_name, log_creation_date, category, description, amount)
-            VALUES (%s, %s, %s, %s, %s);
-        """
-        cursor.execute(
-            insert_query,
-            (user_name, login_time, category, description, amount)
-        )
+            VALUES (%s,%s,%s,%s,%s)
+        """, (user, datetime.now(), p["CATEGORY"], p["DESCRIPTION"], p["AMOUNT"]))
+
         conn.commit()
-        logger.debug(f"Expenses added successfully {user_name}")
-        return {"message": f"Expense added for {user_name} successfully"}, 200
+        return {"message": "Expense added successfully"}, 200
 
 
 class CreateUser(Resource):
@@ -146,34 +115,30 @@ class CreateUser(Resource):
             data = request.get_json()
 
         conn = get_connection("EXPT")
-        cursor = conn.cursor()
+        cur = conn.cursor()
 
-        user_name = data.get("USER_NAME")
-        password = data.get("PASSWORD")
+        user = data.get("USER_NAME")
+        pwd = data.get("PASSWORD")
 
-        # Validate inputs
-        if not user_name or not password:
-            logger.debug("USER_NAME and PASSWORD are required")
+        if not user or not pwd:
             return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-        # Check if user already exists
-        check_query = "SELECT user_id FROM et_users WHERE user_name = %s"
-        df = pd.read_sql(check_query, conn, params=[user_name])
+        df = pd.read_sql(
+            "SELECT user_id FROM et_users WHERE user_name=%s",
+            conn, params=[user]
+        )
 
         if not df.empty:
-            logger.debug("User already exists")
             return {"error": "User already exists"}, 409
 
-        # Insert new user
-        insert_query = """
+        cur.execute("""
             INSERT INTO et_users (user_name, user_password)
-            VALUES (%s, %s)
-        """
+            VALUES (%s,%s)
+        """, (user, pwd))
 
-        cursor.execute(insert_query, (user_name, password))
         conn.commit()
-        logger.debug(f"{user_name} created successfully")
         return {"message": "User created successfully"}, 201
+
 
 class GetExpenses(Resource):
     def post(self, data=None):
@@ -181,170 +146,92 @@ class GetExpenses(Resource):
             data = request.get_json()
 
         conn = get_connection("EXPT")
-        cursor = conn.cursor()
 
-        user_name = data.get("USER_NAME")
-        password = data.get("PASSWORD")
+        user = data.get("USER_NAME")
+        pwd = data.get("PASSWORD")
+        p = data.get("PARAMS", {})
 
-        params = data.get("PARAMS", {})
-        from_date = params.get("FROM_DATE")
-        to_date = params.get("TO_DATE")
-
-        # Validate
-        if not user_name or not password:
-            logger.debug("USER_NAME and PASSWORD are required")
+        if not user or not pwd:
             return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-        if not from_date or not to_date:
-            logger.debug("PARAMS must include FROM_DATE and TO_DATE")
-            return {
-                "error": "PARAMS must include FROM_DATE and TO_DATE"
-            }, 400
+        if not p.get("FROM_DATE") or not p.get("TO_DATE"):
+            return {"error": "FROM_DATE and TO_DATE required"}, 400
 
-        # Validate user
-        query = "SELECT user_id, user_password FROM et_users WHERE user_name = %s"
-        df = pd.read_sql(query, conn, params=[user_name])
+        df = pd.read_sql(
+            "SELECT user_password FROM et_users WHERE user_name=%s",
+            conn, params=[user]
+        )
 
         if df.empty:
-            logger.debug("User not found")
             return {"error": "User not found"}, 404
 
-        row = df.iloc[0]
-
-        if row["user_password"] != password:
-            logger.debug("Incorrect password")
+        if df.iloc[0]["user_password"] != pwd:
             return {"error": "Incorrect password"}, 401
 
-        # Fetch expense logs in date range
-        fetch_query = """
-            SELECT expense_id, user_name, category, description, amount, log_creation_date
+        df = pd.read_sql("""
+            SELECT expense_id, category, description, amount, log_creation_date
             FROM expense_logs
-            WHERE user_name = %s
+            WHERE user_name=%s
               AND log_creation_date::date BETWEEN %s AND %s
-            ORDER BY log_creation_date DESC;
-        """
+            ORDER BY log_creation_date DESC
+        """, conn, params=[user, p["FROM_DATE"], p["TO_DATE"]])
 
-        df_expenses = pd.read_sql(fetch_query, conn,
-                                  params=[user_name, from_date, to_date])
+        df["log_creation_date"] = df["log_creation_date"].astype(str)
 
-        # Convert to list of dicts
-        df_expenses["log_creation_date"] = df_expenses["log_creation_date"].astype(str)
-        # logger.debug(result)
-        # Convert dataframe to list of dicts
-        result = df_expenses.to_dict(orient="records")
-        return {"data": result}, 200
+        return {"data": df.to_dict(orient="records")}, 200
 
 
 def DeleteExpense(data):
     conn = get_connection("EXPT")
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
-    user_name = data.get("USER_NAME")
-    password = data.get("PASSWORD")
-    params = data.get("PARAMS", {}) or {}
+    user = data.get("USER_NAME")
+    pwd = data.get("PASSWORD")
+    p = data.get("PARAMS", {})
 
-    delete_type = params.get("DELETE_TYPE") or params.get("MODE")
-
-    if not user_name or not password:
+    if not user or not pwd:
         return {"error": "USER_NAME and PASSWORD are required"}, 400
 
-    if not delete_type:
-        return {"error": "DELETE_TYPE / MODE is required"}, 400
-
-    # ---- Authenticate user ----
-    user_row = pd.read_sql(
-        """
-        SELECT user_id, user_password
-        FROM et_users
-        WHERE user_name = %s
-        """,
-        conn,
-        params=[user_name],
+    df = pd.read_sql(
+        "SELECT user_password FROM et_users WHERE user_name=%s",
+        conn, params=[user]
     )
 
-    if user_row.empty:
+    if df.empty:
         return {"error": "User not found"}, 404
 
-    if user_row.iloc[0]["user_password"] != password:
+    if df.iloc[0]["user_password"] != pwd:
         return {"error": "Incorrect password"}, 401
 
-    # ---- Base delete filter ----
-    sql = """
-        DELETE FROM expense_logs
-        WHERE user_name = %s
-    """
-    args = [user_name]
+    sql = "DELETE FROM expense_logs WHERE user_name=%s"
+    args = [user]
 
-    # ---- Before Date ----
-    if delete_type.lower() == "before_date":
-        before_date = params.get("BEFORE_DATE")
-        if not before_date:
-            return {"error": "BEFORE_DATE is required"}, 400
+    mode = p.get("DELETE_TYPE")
+
+    if mode == "before_date":
         sql += " AND log_creation_date::date < %s"
-        args.append(before_date)
+        args.append(p["BEFORE_DATE"])
 
-    # ---- Date Range ----
-    elif delete_type.lower() == "date_range":
-        from_date = params.get("FROM_DATE")
-        to_date = params.get("TO_DATE")
-        if not from_date or not to_date:
-            return {"error": "FROM_DATE and TO_DATE are required"}, 400
+    elif mode == "date_range":
         sql += " AND log_creation_date::date BETWEEN %s AND %s"
-        args.extend([from_date, to_date])
+        args.extend([p["FROM_DATE"], p["TO_DATE"]])
 
-    # ---- Specific Entry ----
-    elif delete_type.lower() == "specific_entry":
-        entry_value = params.get("ENTRY_VALUE")
-        if not entry_value:
-            return {"error": "ENTRY_VALUE is required"}, 400
-        try:
-            expense_id = int(entry_value)
-            sql += " AND expense_id = %s"
-            args.append(expense_id)
-        except ValueError:
-            sql += """
-                AND (
-                    COALESCE(description,'') ILIKE %s
-                    OR COALESCE(category,'') ILIKE %s
-                )
-            """
-            like_val = f"%{entry_value}%"
-            args.extend([like_val, like_val])
+    elif mode == "specific_entry":
+        sql += " AND (expense_id=%s OR description ILIKE %s)"
+        args.extend([p["ENTRY_VALUE"], f"%{p['ENTRY_VALUE']}%"])
 
-    else:
-        return {"error": "Invalid DELETE_TYPE value"}, 400
+    cur.execute(sql, tuple(args))
+    count = cur.rowcount
+    conn.commit()
 
-    # ---- Execute ----
-    try:
-        cursor.execute(sql, tuple(args))
-        deleted_count = cursor.rowcount
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        return {"error": f"Deletion failed: {str(e)}"}, 500
-    finally:
-        cursor.close()
-        conn.close()
-
-    return {
-        "message": f"{deleted_count} expense record(s) deleted",
-        "delete_type": delete_type,
-        "deleted_count": deleted_count
-    }, 200
+    return {"message": f"{count} record(s) deleted"}, 200
 
 
-
-
-
-#====================================================================================================
-#                                   Tables creation in database 
-#====================================================================================================
 def ensure_tables_exist():
     conn = get_connection("EXPT")
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
-    # Create users table
-    cursor.execute("""
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS et_users (
         user_id SERIAL PRIMARY KEY,
         user_name VARCHAR(100) UNIQUE NOT NULL,
@@ -353,11 +240,9 @@ def ensure_tables_exist():
     );
     """)
 
-    # Create expenses table
-    cursor.execute("""
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS expense_logs (
         expense_id SERIAL PRIMARY KEY,
-        user_id INT NOT NULL,
         user_name VARCHAR(100),
         category VARCHAR(100),
         description TEXT,
@@ -366,18 +251,15 @@ def ensure_tables_exist():
     );
     """)
 
-    cursor.execute("""
-    ALTER TABLE expense_logs
-    ADD COLUMN IF NOT EXISTS user_name VARCHAR(100);
-    """)
-    cursor.execute("""CREATE TABLE IF NOT EXISTS et_admins (
-    admin_id SERIAL PRIMARY KEY,
-    admin_username VARCHAR(100) UNIQUE NOT NULL,
-    admin_password VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS et_admins (
+        admin_id SERIAL PRIMARY KEY,
+        admin_username VARCHAR(100) UNIQUE NOT NULL,
+        admin_password VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-                   """)
-    conn.commit()
-    cursor.close()
-    conn.close()
+    """)
 
+    conn.commit()
+    cur.close()
+    conn.close()

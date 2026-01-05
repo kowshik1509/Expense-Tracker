@@ -68,32 +68,18 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
 
-    username = request.form["username"]
-    password = request.form["password"]
+    data = {
+        "USER_NAME": request.form["username"],
+        "PASSWORD": request.form["password"]
+    }
 
-    conn = get_connection("EXPT")
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT user_id, user_password
-        FROM et_users
-        WHERE user_name = %s
-    """, (username,))
-    row = cur.fetchone()
-    cur.close()
+    res, status = LoginUser().post(data)
 
-    if not row:
-        return render_template("login.html", error="User not found")
+    if status != 200:
+        return render_template("login.html", error=res.get("error"))
 
-    user_id, db_pass = row
-    if db_pass != password:
-        return render_template("login.html", error="Invalid password")
-
-    # 🔹 Store both id + name in session
-    session["user_id"] = user_id
-    session["user"] = username
-
+    session["user"] = data["USER_NAME"]
     return redirect("/ExpenseTracker/Home")
-
 
 
 # -------------------- New user creation route ---------------------------------------
@@ -218,104 +204,12 @@ def delete_expenses():
     return render_template("delete_expenses.html")
 
 
-#---------------------------------- USER PROFILE ----------------------------------------------
-@app.route("/ExpenseTracker/Profile")
-def profile():
-    if "user" not in session:
-        return redirect("/ExpenseTracker/Login")
-
-    conn = get_connection("EXPT")
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT user_name, created_at
-        FROM et_users
-        WHERE user_id = %s
-    """, (session["user_id"],))
-    user = cur.fetchone()
-    cur.close()
-
-    return render_template(
-        "profile.html",
-        username=user[0],
-        created_at=user[1]
-    )
-
-# --- SHOW PROFILE DATA (optional fetch if needed)
-@app.route("/ExpenseTracker/ProfileData")
-def profile_data():
-    if "user" not in session:
-        return redirect("/ExpenseTracker/Login")
-    return {"user": session["user"], "username": session["user"]}
-
-
-# --- EDIT PROFILE NAME ---
-@app.route("/ExpenseTracker/EditProfile", methods=["POST"])
-def edit_profile():
-    if "user" not in session:
-        return redirect("/ExpenseTracker/Login")
-
-    new_name = request.form["new_name"]
-
-    conn = get_connection("EXPT")
-    cur = conn.cursor()
-    cur.execute(
-        "UPDATE et_users SET user_name=%s WHERE user_id=%s RETURNING user_name",
-        (new_name, session["user_id"])
-    )
-    conn.commit()
-    session["user"] = new_name
-    cur.close()
-    flash("Profile updated", "success")
-    return redirect("/ExpenseTracker/Home")
-
-
-# --- CHANGE PASSWORD ---
-@app.route("/ExpenseTracker/ChangePassword", methods=["POST"])
-def change_password():
-    if "user" not in session:
-        return redirect("/ExpenseTracker/Login")
-
-    old_pass = request.form["old_pass"]
-    new_pass = request.form["new_pass"]
-
-    conn = get_connection("EXPT")
-    cur = conn.cursor()
-
-    cur.execute("SELECT user_password FROM et_users WHERE user_id=%s",
-                (session["user_id"],))
-    db_pass = cur.fetchone()[0]
-
-    if old_pass != db_pass:
-        flash("Old password incorrect", "error")
-        return redirect("/ExpenseTracker/Home")
-
-    cur.execute("UPDATE et_users SET user_password=%s WHERE user_id=%s",
-                (new_pass, session["user_id"]))
-    conn.commit()
-    cur.close()
-
-    flash("Password updated", "success")
-    return redirect("/ExpenseTracker/Home")
-
-
-
 
 # ---------------------- Logout -> Login page ---------------------------------------------
 @app.route("/ExpenseTracker/logout")
-def logout_page():
-    if "user" not in session:
-        return redirect("/ExpenseTracker/Login")
-
-    return render_template("logout_confirm.html",
-                           username=session["user"])
-
-
-@app.route("/ExpenseTracker/confirm_logout", methods=["POST"])
-def confirm_logout():
+def logout():
     session.clear()
     return redirect("/ExpenseTracker/Login")
-
-
 
 
 # ==================================================================================

@@ -1,232 +1,122 @@
 {% extends "base.html" %}
+
 {% block content %}
 
 <style>
-.add-expense-bg{
-  width:100%;
-  min-height:calc(100vh - 72px);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:32px 18px;
-  background:
-    linear-gradient(rgba(248,250,252,.92),rgba(248,250,252,.92)),
-    url("https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=80");
-  background-size:cover;
-  background-position:center;
-}
-[data-theme="dark"] .add-expense-bg{
-  background:
-    linear-gradient(rgba(2,6,23,.9),rgba(2,6,23,.9)),
-    url("https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=80");
-}
+  :root {
+    --primary: #4f46e5;
+    --accent: #0ea5e9;
+    --border: #e5e7eb;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+  }
 
-/* ---------- CARD ---------- */
-.expense-card{
-  background:rgba(255,255,255,.72);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  width:500px;
-  max-width:100%;
-  padding:34px;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.55);
-  box-shadow:0 28px 60px rgba(0,0,0,.22);
-  animation:fadeIn .35s ease;
-  position:relative;
-}
-[data-theme="dark"] .expense-card{
-  background:rgba(17,24,39,.82);
-  border:1px solid rgba(255,255,255,.12);
-}
+  /* ===== PAGE BACKGROUND (WORKSPACE STYLE) ===== */
+  .add-expense-bg {
+    width: 100%;
+    min-height: calc(100vh - 72px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-/* success tick overlay */
-.success-overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  border-radius:20px;
-}
-.success-overlay.show{display:flex}
-.success-check{
-  width:88px;height:88px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;
-  font-size:40px;
-  font-weight:900;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  animation:pop .45s ease;
-}
+    background:
+      linear-gradient(
+        rgba(248,250,252,0.95),
+        rgba(248,250,252,0.95)
+      ),
+      url("https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1920&q=80");
 
-/* ---------- TITLES ---------- */
-.expense-title{
-  font-size:24px;
-  font-weight:900;
-  margin-bottom:4px;
-  background:linear-gradient(90deg,var(--primary),var(--accent));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.expense-subtitle{
-  font-size:13px;
-  color:var(--text-muted);
-  margin-bottom:22px;
-}
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 
-/* ---------- FLOATING FIELDS ---------- */
-.field{
-  position:relative;
-}
-.field input,
-.field select{
-  width:100%;
-  padding:14px 12px 10px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  font-size:14px;
-  background:var(--card-bg);
-  color:var(--text-main);
-  transition:.2s;
-}
-.field label{
-  position:absolute;
-  top:12px; left:12px;
-  font-size:13px;
-  color:var(--text-muted);
-  pointer-events:none;
-  transition:.2s;
-}
-.field input:focus,
-.field select:focus{
-  border-color:var(--primary);
-  box-shadow:0 0 0 3px rgba(99,102,241,.28);
-  outline:none;
-}
-.field input:not(:placeholder-shown)+label,
-.field input:focus+label,
-.field select:focus+label{
-  top:-7px;
-  left:10px;
-  font-size:11px;
-  background:var(--card-bg);
-  padding:1px 6px;
-  border-radius:6px;
-}
+  /* ===== CARD ===== */
+  .expense-card {
+    background: #ffffff;
+    width: 420px;
+    padding: 36px;
+    border-radius: 18px;
+    box-shadow: 0 22px 45px rgba(0,0,0,0.18);
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+  }
 
-/* ---------- GRID ---------- */
-.form-grid{display:grid;gap:14px}
-@media(min-width:680px){.two-col{grid-template-columns:1fr 1fr}}
+  .expense-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-/* ---------- BUTTON ---------- */
-.submit-btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;
-  font-size:15px;
-  font-weight:800;
-  margin-top:4px;
-  cursor:pointer;
-  transition:.22s;
-}
-.submit-btn:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(79,70,229,.38)}
-.submit-btn.loading{opacity:.75;pointer-events:none}
+  .expense-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
 
-/* ---------- ANIMATIONS ---------- */
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pop{from{transform:scale(.6);opacity:.4}to{transform:scale(1);opacity:1}}
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
 
-@media(max-width:520px){
-  .expense-card{padding:22px;border-radius:16px}
-  .expense-title{font-size:20px}
-}
+  input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(79,70,229,0.35);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>
 
 <div class="add-expense-bg">
   <div class="expense-card">
-    <div class="success-overlay" id="successOverlay">
-      <div class="success-check">✔</div>
-    </div>
-
     <div class="expense-title">Add Expense</div>
-    <div class="expense-subtitle">Record a new transaction</div>
+    <div class="expense-subtitle">Enter your expense details</div>
 
-    <form method="POST" autocomplete="off" onsubmit="handleSubmit(event)">
+    <form method="POST">
+      <input name="category" placeholder="Category" required>
+      <input name="description" placeholder="Description" required>
+      <input name="amount" type="number" placeholder="Amount" required>
+      <input name="password" type="password" placeholder="Password" required>
 
-      <!-- Category -->
-      <div class="field">
-        <select name="category" required>
-          <option value="" disabled selected hidden></option>
-          <option>🍔 Food & Dining</option>
-          <option>🚕 Transport</option>
-          <option>🏠 Rent & Housing</option>
-          <option>🛒 Groceries</option>
-          <option>🎮 Entertainment</option>
-          <option>💊 Healthcare</option>
-          <option>💻 Subscriptions</option>
-          <option>📚 Education</option>
-        </select>
-        <label>Category</label>
-      </div>
-
-      <div class="field">
-        <input name="description" placeholder=" " required>
-        <label>Description</label>
-      </div>
-
-      <!-- Amount + Password -->
-      <div class="form-grid two-col">
-        <div class="field">
-          <input id="amountInput" name="amount" inputmode="decimal" placeholder=" " required>
-          <label>Amount (₹)</label>
-        </div>
-
-        <div class="field">
-          <input type="password" name="password" placeholder=" " required>
-          <label>Password</label>
-        </div>
-      </div>
-
-      <button class="submit-btn" id="submitBtn" type="submit">
-        Add Expense
-      </button>
+      <button type="submit">Add Expense</button>
     </form>
-
   </div>
 </div>
-
-<script>
-/* Currency formatting */
-const amountInput = document.getElementById("amountInput");
-amountInput.addEventListener("input", () => {
-  let v = amountInput.value.replace(/[^0-9.]/g,"");
-  if(v){
-    const parts = v.split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,",");
-    v = parts.join(".");
-  }
-  amountInput.value = v;
-});
-
-/* Submit UX + success animation */
-function handleSubmit(e){
-  const btn = document.getElementById("submitBtn");
-  const overlay = document.getElementById("successOverlay");
-
-  btn.classList.add("loading");
-  btn.innerText = "Saving...";
-
-  // Let backend submit normally but show success feel
-  setTimeout(()=> overlay.classList.add("show"), 250);
-}
-</script>
 
 {% endblock %}
