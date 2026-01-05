@@ -174,15 +174,15 @@ body{
         
         <!-- SAFE AVATAR + NAME -->
         <div class="avatar">
-          {{ (username or '?')[:1]|upper }}
+          {{ (user or '?')[:1]|upper }}
         </div>
 
-        {{ username or 'Guest' }}
+        {{ user or 'Guest' }}
       </button>
 
       <div class="profile-menu" id="profileMenu">
 
-        {% if username %}
+        {% if user %}
           <a onclick="openProfile()">✏️ Edit Profile</a>
           <a onclick="openPwd()">🔑 Change Password</a>
           <a href="/ExpenseTracker/logout" style="color:#dc2626">🚪 Logout</a>
