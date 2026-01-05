@@ -5,103 +5,206 @@
 <title>{% block title %}Expense Tracker{% endblock %}</title>
 
 <style>
-/* ==== THEME VARIABLES (LIGHT) ==== */
+/* ---------- THEME VARIABLES ---------- */
 :root {
-  --primary:#6366f1; --accent:#0ea5e9; --accent-2:#22c55e;
+  --primary:#6366f1;
+  --accent:#0ea5e9;
+  --accent-2:#22c55e;
+
   --danger:#dc2626;
-  --nav-bg:#ffffff; --border:#e5e7eb;
-  --text-main:#111827; --text-muted:#6b7280;
-  --page-bg-1:#eef2ff; --page-bg-2:#e0f2fe;
+  --nav-bg:#ffffff;
+  --border:#e5e7eb;
+
+  --text-main:#111827;
+  --text-muted:#6b7280;
+
+  --page-bg-1:#eef2ff;
+  --page-bg-2:#e0f2fe;
+
   --card-bg:#ffffff;
 }
 
-/* ==== DARK MODE ==== */
 [data-theme="dark"]{
-  --primary:#818cf8; --accent:#38bdf8; --accent-2:#4ade80;
+  --primary:#818cf8;
+  --accent:#38bdf8;
+  --accent-2:#4ade80;
+
   --nav-bg:#0f172a;
-  --text-main:#e5e7eb; --text-muted:#9ca3af;
-  --page-bg-1:#020617; --page-bg-2:#020617;
-  --card-bg:#111827; --border:#1f2937;
+  --card-bg:#111827;
+  --border:#1f2937;
+
+  --text-main:#e5e7eb;
+  --text-muted:#9ca3af;
+
+  --page-bg-1:#020617;
+  --page-bg-2:#020617;
 }
 
 *{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:Segoe UI,Arial;
+  font-family:"Segoe UI",Tahoma,Verdana,sans-serif;
   background:linear-gradient(135deg,var(--page-bg-1),var(--page-bg-2));
-  min-height:100vh;
   color:var(--text-main);
+  min-height:100vh;
 }
 
-/* ==== NAVBAR ==== */
+/* ---------- NAVBAR ---------- */
 .navbar{
-  height:72px; display:flex; justify-content:space-between; align-items:center;
-  padding:0 20px; background:var(--nav-bg);
+  height:72px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 20px;
+  background:var(--nav-bg);
   border-bottom:3px solid;
   border-image:linear-gradient(90deg,var(--primary),var(--accent),var(--accent-2)) 1;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
 }
-.logo{font-weight:900;font-size:20px}
 
-/* ---- links ---- */
-.nav-links{display:flex;gap:18px;align-items:center}
-.nav-links a{text-decoration:none;font-weight:600;color:var(--text-muted)}
+.logo{
+  font-size:20px;
+  font-weight:800;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* NAV LINKS */
+.nav-links{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+.nav-links a{
+  text-decoration:none;
+  color:var(--text-muted);
+  font-weight:600;
+  font-size:14px;
+}
+
 .nav-links a:hover{color:var(--primary)}
+.nav-links .delete{color:#dc2626}
 
-/* ==== THEME SELECT ==== */
+/* THEME SELECT */
 .theme-select{
-  border:1px solid var(--border); background:transparent;
-  padding:6px 10px; border-radius:8px; font-size:13px;
-}
-
-/* ==== PROFILE BUTTON ==== */
-.profile-wrapper{position:relative}
-.profile-btn{
-  display:flex;align-items:center;gap:8px;
   border:1px solid var(--border);
-  background:var(--card-bg);padding:6px 10px;
-  border-radius:10px;cursor:pointer;
-}
-.avatar-bubble{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:900;
+  background:transparent;
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:13px;
+  color:var(--text-muted);
 }
 
-/* ==== PROFILE MENU ==== */
+/* ---------- PROFILE DROPDOWN ---------- */
+.profile-wrapper{position:relative}
+
+.profile-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--card-bg);
+  cursor:pointer;
+}
+
+.avatar{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:900;
+}
+
 .profile-menu{
-  position:absolute;top:42px;right:0;
+  position:absolute;
+  right:0;
+  top:44px;
   background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:12px;
-  display:none;min-width:170px;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+  display:none;
+  min-width:170px;
 }
+
 .profile-menu.open{display:block}
-.profile-menu button,.profile-menu a{
-  width:100%;text-align:left;border:none;background:none;
-  padding:12px 14px;font-size:13px;font-weight:600;
-  color:var(--text-main);cursor:pointer;text-decoration:none;
+
+.profile-menu a{
+  display:block;
+  padding:12px;
+  text-decoration:none;
+  color:var(--text-main);
+  font-weight:600;
 }
-.profile-menu button:hover,.profile-menu a:hover{
+
+.profile-menu a:hover{
   background:rgba(99,102,241,.12);
 }
-.logout-link{color:var(--danger)}
 
-/* ==== MODAL ==== */
+/* ---------- MODAL ---------- */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
 .modal{
-  position:fixed;inset:0;
-  display:none;justify-content:center;align-items:center;
-  background:rgba(0,0,0,.45);z-index:9999;
+  background:var(--card-bg);
+  border-radius:18px;
+  padding:26px;
+  width:360px;
+  box-shadow:0 30px 60px rgba(0,0,0,.35);
+  animation:fade .25s ease;
 }
-.modal.show{display:flex}
-.modal-card{
-  background:var(--card-bg);padding:26px;border-radius:16px;
-  box-shadow:0 20px 50px rgba(0,0,0,.35);
-  min-width:300px;
-}
-.modal-card h3{margin-top:0}
 
-/* ==== LAYOUT WRAPPER ==== */
-.container{padding:26px}
+@keyframes fade{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+.modal h3{
+  margin:0 0 14px;
+  font-size:18px;
+  font-weight:900;
+}
+
+.modal input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  margin-bottom:10px;
+  background:var(--card-bg);
+  color:var(--text-main);
+}
+
+.btn-row{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  margin-top:6px;
+}
+
+.btn{
+  padding:8px 14px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.primary{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff}
+.secondary{background:transparent;border:1px solid var(--border)}
 </style>
 </head>
 
@@ -114,29 +217,24 @@ body{
     <a href="/ExpenseTracker/Home">Home</a>
     <a href="/ExpenseTracker/AddExpense">Add Expense</a>
     <a href="/ExpenseTracker/GetExpenses">View Expenses</a>
-    <a href="/ExpenseTracker/DeleteOldExpenses">Delete</a>
+    <a href="/ExpenseTracker/DeleteOldExpenses" class="delete">Delete</a>
 
-    <!-- Theme -->
     <select id="themeSelect" class="theme-select" onchange="applyTheme(this.value)">
       <option value="system">🖥️ System</option>
       <option value="light">☀️ Bright</option>
       <option value="dark">🌙 Dark</option>
     </select>
 
-    <!-- PROFILE -->
     <div class="profile-wrapper">
-      <button class="profile-btn" onclick="toggleProfileMenu(event)">
-        <div class="avatar-bubble" id="avatarBubble">
-          {{ username[0]|upper if username else "U" }}
-        </div>
+      <button class="profile-btn" onclick="toggleProfile(event)">
+        <div class="avatar">{{ username[0]|upper }}</div>
         {{ username }}
       </button>
 
       <div class="profile-menu" id="profileMenu">
-        <button onclick="openModal('profileModal')">👤 Profile</button>
-        <button onclick="openModal('editModal')">✏️ Edit Profile</button>
-        <button onclick="openModal('passwordModal')">🔑 Change Password</button>
-        <a href="/ExpenseTracker/logout" class="logout-link">🚪 Logout</a>
+        <a onclick="openProfile()">✏️ Edit Profile</a>
+        <a onclick="openPwd()">🔑 Change Password</a>
+        <a href="/ExpenseTracker/logout" style="color:#dc2626">🚪 Logout</a>
       </div>
     </div>
   </div>
@@ -146,65 +244,53 @@ body{
   {% block content %}{% endblock %}
 </div>
 
-<!-- ==== PROFILE MODAL ==== -->
-<div class="modal" id="profileModal">
-  <div class="modal-card">
-    <h3>👤 Profile</h3>
-    <p><b>Name:</b> {{ username }}</p>
-    <p><b>User ID:</b> {{ session['user_id'] }}</p>
-    <button onclick="closeModal('profileModal')">Close</button>
-  </div>
-</div>
-
-<!-- ==== EDIT PROFILE MODAL ==== -->
-<div class="modal" id="editModal">
-  <div class="modal-card">
+<!-- ---------- EDIT PROFILE MODAL ---------- -->
+<div class="modal-backdrop" id="profileModal">
+  <div class="modal">
     <h3>✏️ Edit Profile</h3>
     <form method="POST" action="/ExpenseTracker/EditProfile">
       <input name="new_name" value="{{ username }}" required>
-      <button type="submit">Save</button>
+      <div class="btn-row">
+        <button type="button" class="secondary btn" onclick="closeModals()">Cancel</button>
+        <button class="primary btn">Save</button>
+      </div>
     </form>
-    <button onclick="closeModal('editModal')">Cancel</button>
   </div>
 </div>
 
-<!-- ==== CHANGE PASSWORD MODAL ==== -->
-<div class="modal" id="passwordModal">
-  <div class="modal-card">
+<!-- ---------- CHANGE PASSWORD MODAL ---------- -->
+<div class="modal-backdrop" id="pwdModal">
+  <div class="modal">
     <h3>🔑 Change Password</h3>
     <form method="POST" action="/ExpenseTracker/ChangePassword">
       <input type="password" name="old_pass" placeholder="Old Password" required>
       <input type="password" name="new_pass" placeholder="New Password" required>
-      <button type="submit">Update</button>
+      <div class="btn-row">
+        <button type="button" class="secondary btn" onclick="closeModals()">Cancel</button>
+        <button class="primary btn">Update</button>
+      </div>
     </form>
-    <button onclick="closeModal('passwordModal')">Cancel</button>
   </div>
 </div>
 
 <script>
-/* Avatar color */
-function avatarColor(n){let h=0;for(let c of n)h=c.charCodeAt(0)+((h<<5)-h);return`hsl(${h%360},70%,55%)`}
-document.getElementById("avatarBubble").style.background =
-  `linear-gradient(135deg, ${avatarColor("{{ username }}")}, var(--accent))`;
-
-/* Profile dropdown */
-function toggleProfileMenu(e){
+function toggleProfile(e){
   e.stopPropagation();
   document.getElementById("profileMenu").classList.toggle("open");
 }
 document.addEventListener("click",()=>document.getElementById("profileMenu").classList.remove("open"));
 
-/* Modals */
-function openModal(id){document.getElementById(id).classList.add("show")}
-function closeModal(id){document.getElementById(id).classList.remove("show")}
+function openProfile(){closeModals();document.getElementById("profileModal").style.display="flex";}
+function openPwd(){closeModals();document.getElementById("pwdModal").style.display="flex";}
+function closeModals(){document.getElementById("profileModal").style.display="none";document.getElementById("pwdModal").style.display="none";}
 
-/* Theme */
-const mq = window.matchMedia("(prefers-color-scheme: dark)");
-function setSystem(){document.body.dataset.theme = mq.matches?"dark":"light";}
-function applyTheme(mode){
-  localStorage.setItem("theme-mode",mode);
-  if(mode==="system"){setSystem();mq.addEventListener("change",setSystem);}
-  else{mq.removeEventListener("change",setSystem);document.body.dataset.theme=mode;}
+/* THEME */
+const mq=window.matchMedia("(prefers-color-scheme: dark)");
+function setSystem(){document.body.dataset.theme=mq.matches?"dark":"light";}
+function applyTheme(m){localStorage.setItem("theme-mode",m);
+  document.getElementById("themeSelect").value=m;
+  if(m==="system"){setSystem();mq.addEventListener("change",setSystem);}
+  else{mq.removeEventListener("change",setSystem);document.body.dataset.theme=m;}
 }
 applyTheme(localStorage.getItem("theme-mode")||"system");
 </script>

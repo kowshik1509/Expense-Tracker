@@ -2,15 +2,14 @@
 {% block content %}
 
 <style>
-
-/* ---------- PAGE BACKDROP (LIGHT / DARK AWARE) ---------- */
+/* ---------- PAGE BACKDROP ---------- */
 .delete-expense-bg{
   width:100%;
   min-height:calc(100vh - 72px);
   display:flex;
   justify-content:center;
   align-items:center;
-  padding:32px 18px;
+  padding:34px 18px;
 
   background:
     linear-gradient(rgba(254,226,226,.92),rgba(254,226,226,.92)),
@@ -18,35 +17,52 @@
   background-size:cover;
   background-position:center;
 }
-
 [data-theme="dark"] .delete-expense-bg{
   background:
-    linear-gradient(rgba(24,0,0,.90),rgba(24,0,0,.90)),
+    linear-gradient(rgba(24,0,0,.88),rgba(24,0,0,.88)),
     url("https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80");
 }
 
-/* ---------- CARD ---------- */
+/* ---------- CARD (Glass) ---------- */
 .expense-card{
-  background:var(--card-bg);
-  width:480px;
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  width:520px;
   max-width:100%;
   padding:34px;
-  border-radius:18px;
-  box-shadow:0 24px 50px rgba(0,0,0,.28);
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:0 28px 60px rgba(0,0,0,.28);
   text-align:center;
-  animation:fadeIn .35s ease-in-out;
+  animation:fadeIn .35s ease;
+}
+[data-theme="dark"] .expense-card{
+  background:rgba(17,24,39,.82);
+  border:1px solid rgba(255,255,255,.1);
 }
 
-/* ---------- TITLES ---------- */
+/* ---------- HEADER ---------- */
+.icon-badge{
+  width:68px;height:68px;
+  border-radius:16px;
+  margin:0 auto 10px;
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:30px;
+  font-weight:900;
+}
 .expense-title{
-  font-size:24px;
+  font-size:22px;
   font-weight:900;
   color:var(--danger,#dc2626);
-  margin-bottom:6px;
+  margin-bottom:4px;
 }
-
 .expense-subtitle{
-  font-size:14px;
+  font-size:13px;
   color:var(--text-muted);
   margin-bottom:22px;
 }
@@ -65,7 +81,7 @@ label{
 .expense-card select{
   width:100%;
   padding:12px;
-  border-radius:10px;
+  border-radius:12px;
   border:1px solid var(--border);
   background:var(--card-bg);
   color:var(--text-main);
@@ -73,17 +89,15 @@ label{
   margin-bottom:14px;
   transition:border .2s, box-shadow .2s;
 }
-
 .expense-card input::placeholder{color:var(--text-muted)}
-
 .expense-card input:focus,
 .expense-card select:focus{
-  border-color:var(--danger,#dc2626);
+  border-color:#dc2626;
   box-shadow:0 0 0 3px rgba(220,38,38,.25);
   outline:none;
 }
 
-/* select icon */
+/* select caret */
 .expense-card select{
   appearance:none;
   background-image:url("data:image/svg+xml;utf8,<svg fill='%23dc2626' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
@@ -93,90 +107,79 @@ label{
   cursor:pointer;
 }
 
-/* ---------- CONDITIONAL FIELD GROUPS ---------- */
+/* ---------- CONDITIONAL GROUPS ---------- */
 .field-box{
   padding:14px;
   border:1px dashed rgba(220,38,38,.45);
-  border-radius:12px;
+  border-radius:14px;
   background:rgba(254,226,226,.45);
   margin-bottom:14px;
-  animation:fadeIn .25s ease;
+  animation:slideIn .25s ease;
 }
-
 [data-theme="dark"] .field-box{
-  background:rgba(220,38,38,.10);
+  background:rgba(220,38,38,.08);
   border-color:rgba(220,38,38,.35);
 }
 
-/* two-column dates on wider screens */
-.field-grid{
-  display:grid;
-  gap:10px;
-}
-@media(min-width:640px){
-  .field-grid.two-col{grid-template-columns:1fr 1fr;}
-}
+.field-grid{display:grid;gap:10px}
+@media(min-width:640px){.field-grid.two-col{grid-template-columns:1fr 1fr}}
 
 /* ---------- BUTTON ---------- */
 .expense-card button{
   width:100%;
   padding:12px;
   border:0;
-  border-radius:12px;
+  border-radius:14px;
   background:linear-gradient(135deg,#dc2626,#b91c1c);
   color:#fff;
   font-size:15px;
   font-weight:900;
   cursor:pointer;
-  transition:.2s;
+  transition:transform .2s, box-shadow .2s;
 }
-
 .expense-card button:hover{
   transform:translateY(-1px);
-  box-shadow:0 12px 22px rgba(220,38,38,.45);
+  box-shadow:0 14px 28px rgba(220,38,38,.45);
 }
 
-/* ---------- WARNING ---------- */
+/* ---------- WARNING PANEL ---------- */
 .warning{
   margin-top:18px;
   padding:14px;
-  border-radius:12px;
-  background:var(--danger-soft,#fee2e2);
-  color:var(--danger-dark,#991b1b);
+  border-radius:14px;
+  background:#fee2e2;
+  color:#7f1d1d;
   font-size:13px;
   font-weight:800;
 }
-
 [data-theme="dark"] .warning{
   background:rgba(220,38,38,.12);
   color:#fecaca;
 }
 
-/* ---------- ANIM ---------- */
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(8px)}
-  to{opacity:1;transform:translateY(0)}
-}
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* ---------- MOBILE ---------- */
 @media(max-width:520px){
-  .expense-card{padding:24px;border-radius:14px}
-  .expense-title{font-size:20px}
+  .expense-card{padding:24px;border-radius:16px}
+  .expense-title{font-size:19px}
 }
 </style>
 
 <div class="delete-expense-bg">
   <div class="expense-card">
 
-    <div class="expense-title">🗑️ Delete Expenses</div>
-    <div class="expense-subtitle">Choose how you want to delete expenses</div>
+    <div class="icon-badge">🗑️</div>
+    <div class="expense-title">Delete Expenses</div>
+    <div class="expense-subtitle">Choose what you want to remove</div>
 
     <form method="POST">
 
       <!-- Delete Type -->
       <label for="delete_type">Delete Type</label>
       <select id="delete_type" name="delete_type" required>
-        <option value="">-- Select delete option --</option>
+        <option value="">— Select option —</option>
         <option value="before_date">Before a Specific Date</option>
         <option value="date_range">Between Date Range</option>
         <option value="specific_entry">Specific Entry</option>
@@ -201,7 +204,7 @@ label{
       <div id="specificEntryBox" class="field-box" style="display:none;">
         <label for="entry_value">Delete specific entry</label>
         <input id="entry_value" type="text" name="entry_value"
-               placeholder="Enter Entry ID / Name / Ref">
+               placeholder="Enter Expense ID / Description / Ref">
       </div>
 
       <!-- Password -->
@@ -209,17 +212,17 @@ label{
       <input id="password" type="password" name="password"
              placeholder="Enter your password" required>
 
-      <button type="submit">Delete</button>
+      <button type="submit">Delete Records</button>
     </form>
 
     <div class="warning">
-      ⚠️ This action is permanent and cannot be undone
+      ⚠️ Deletions are permanent — this cannot be undone.
     </div>
   </div>
 </div>
 
 <script>
-/* Field-group toggler (smart + consistent) */
+/* Smart toggler for conditional fields */
 const deleteType = document.getElementById("delete_type");
 const boxes = {
   before_date: document.getElementById("beforeDateBox"),
