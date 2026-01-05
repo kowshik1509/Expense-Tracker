@@ -4,208 +4,240 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-  :root {
-    --primary: #4f46e5;
-    --accent: #0ea5e9;
-    --success: #22c55e;
-    --danger: #ef4444;
+/* ---------- PAGE BACKGROUND ---------- */
+.analytics-bg {
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  padding: 44px 18px 64px;
 
-    --card-bg: #ffffff;
-    --border: #e5e7eb;
-    --text-main: #1f2937;
-    --text-muted: #6b7280;
-    --row-alt: #f8fafc;
+  background:
+    linear-gradient(rgba(248,250,252,.94), rgba(248,250,252,.94)),
+    url("https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1920&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Dark overlay */
+[data-theme="dark"] .analytics-bg {
+  background:
+    linear-gradient(rgba(2,6,23,.9), rgba(2,6,23,.9)),
+    url("https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1920&q=80");
+}
+
+/* ---------- FORM CARD ---------- */
+.expense-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.expense-card {
+  background: var(--card-bg);
+  width: 480px;
+  max-width: 100%;
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: 0 22px 45px rgba(0,0,0,.18);
+  text-align: center;
+  animation: fadeIn .35s ease-in-out;
+}
+
+.expense-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.expense-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+/* labels + inputs */
+label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.expense-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  background: var(--card-bg);
+  color: var(--text-main);
+}
+
+.expense-card input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.22);
+  outline: none;
+}
+
+.expense-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ---------- CHART CARD ---------- */
+.chart-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.chart-card {
+  background: var(--card-bg);
+  width: 480px;
+  max-width: 100%;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 22px 45px rgba(0,0,0,.18);
+  text-align: center;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 14px;
+}
+
+.chart-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 240px;
+}
+
+#expenseChart {
+  max-width: 260px;
+  max-height: 260px;
+}
+
+.chart-summary {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+.chart-summary span {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--accent-2, #22c55e);
+  margin-top: 6px;
+}
+
+/* ---------- RESULTS TABLE ---------- */
+.results-section {
+  max-width: 1150px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  padding: 28px 30px;
+  border-radius: 20px;
+  box-shadow: 0 26px 55px rgba(0,0,0,.22);
+}
+
+.results-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-main);
+  margin-bottom: 14px;
+}
+
+/* mobile scroll wrapper */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* table */
+.expense-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 720px;
+}
+
+.expense-table th {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  padding: 14px;
+  text-align: left;
+}
+
+.expense-table td {
+  padding: 14px;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border);
+}
+
+.expense-table tbody tr:nth-child(even) {
+  background: var(--row-alt, #f8fafc);
+}
+
+[data-theme="dark"] .expense-table tbody tr:nth-child(even) {
+  background: rgba(255,255,255,.04);
+}
+
+.expense-table tbody tr:hover {
+  background: rgba(79,70,229,.08);
+}
+
+.expense-table td:last-child {
+  font-weight: 800;
+  color: var(--accent-2, #22c55e);
+}
+
+.no-data {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 22px 0;
+}
+
+/* ---------- ANIMATION ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 520px) {
+  .expense-card, .chart-card {
+    padding: 22px;
+    border-radius: 14px;
   }
+  .expense-title { font-size: 20px; }
+  .chart-wrap { min-height: 200px; }
+}
 
-  /* ===== PAGE BACKGROUND (ANALYTICS / WORKSPACE) ===== */
+/* Reduce heavy bg rendering on very small devices */
+@media (max-width: 480px) {
   .analytics-bg {
-    width: 100%;
-    min-height: calc(100vh - 72px);
-    padding: 50px 20px 70px;
-
-    background:
-      linear-gradient(
-        rgba(248,250,252,0.94),
-        rgba(248,250,252,0.94)
-      ),
-      url("https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1920&q=80");
-
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: 900px auto;
   }
-
-  /* ===== FORM SECTION ===== */
-  .expense-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 50px;
-  }
-
-  .expense-card {
-    background: var(--card-bg);
-    width: 440px;
-    padding: 36px;
-    border-radius: 18px;
-    box-shadow: 0 22px 45px rgba(0,0,0,0.18);
-    text-align: center;
-    animation: fadeIn 0.35s ease-in-out;
-  }
-
-  .expense-title {
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 6px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .expense-subtitle {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 26px;
-  }
-
-  label {
-    display: block;
-    text-align: left;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 6px;
-  }
-
-  input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 18px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    font-size: 14px;
-  }
-
-  input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79,70,229,0.18);
-  }
-
-  button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  /* ===== CHART SECTION ===== */
-  .chart-section {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 50px;
-  }
-
-  .chart-card {
-    background: var(--card-bg);
-    width: 440px;
-    padding: 32px;
-    border-radius: 18px;
-    box-shadow: 0 22px 45px rgba(0,0,0,0.18);
-    text-align: center;
-  }
-
-  .chart-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--text-main);
-    margin-bottom: 14px;
-  }
-
-  #expenseChart {
-    max-width: 240px;
-    margin: 0 auto 18px auto;
-  }
-
-  .chart-summary {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-muted);
-  }
-
-  .chart-summary span {
-    display: block;
-    font-size: 22px;
-    font-weight: 900;
-    color: var(--success);
-    margin-top: 6px;
-  }
-
-  /* ===== RESULTS ===== */
-  .results-section {
-    max-width: 1150px;
-    margin: 0 auto;
-    background: var(--card-bg);
-    padding: 30px 34px;
-    border-radius: 20px;
-    box-shadow: 0 26px 55px rgba(0,0,0,0.22);
-  }
-
-  .results-title {
-    font-size: 18px;
-    font-weight: 900;
-    color: var(--text-main);
-    margin-bottom: 18px;
-  }
-
-  /* ===== TABLE ===== */
-  .expense-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-
-  .expense-table th {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    padding: 14px;
-    text-align: left;
-  }
-
-  .expense-table td {
-    padding: 14px;
-    color: var(--text-main);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .expense-table tbody tr:nth-child(even) {
-    background: var(--row-alt);
-  }
-
-  .expense-table tbody tr:hover {
-    background: #eef2ff;
-  }
-
-  .expense-table td:last-child {
-    font-weight: 800;
-    color: var(--success);
-  }
-
-  .no-data {
-    text-align: center;
-    font-size: 14px;
-    color: var(--text-muted);
-    padding: 22px 0;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+}
 </style>
 
 <div class="analytics-bg">
@@ -236,7 +268,9 @@
   <div class="chart-section">
     <div class="chart-card">
       <div class="chart-title">Expenses by Category</div>
-      <canvas id="expenseChart"></canvas>
+      <div class="chart-wrap">
+        <canvas id="expenseChart"></canvas>
+      </div>
 
       <div class="chart-summary">
         Total Expenses
@@ -252,58 +286,84 @@
     <div class="results-title">Expense Results</div>
 
     {% if expenses|length > 0 %}
-    <table class="expense-table">
-      <thead>
-        <tr>
-          <th>Expense Id</th>
-          <th>Date</th>
-          <th>Category</th>
-          <th>Description</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for row in expenses %}
-        <tr>
-          <td>{{ row.expense_id }}</td>
-          <td>{{ row.log_creation_date }}</td>
-          <td>{{ row.category }}</td>
-          <td>{{ row.description }}</td>
-          <td>{{ row.amount }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-wrapper">
+      <table class="expense-table">
+        <thead>
+          <tr>
+            <th>Expense Id</th>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in expenses %}
+          <tr>
+            <td>{{ row.expense_id }}</td>
+            <td>{{ row.log_creation_date }}</td>
+            <td>{{ row.category }}</td>
+            <td>{{ row.description }}</td>
+            <td>{{ row.amount }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
     <div class="no-data">No expenses found for this date range.</div>
     {% endif %}
   </div>
   {% endif %}
-
 </div>
 
 {% if categories is defined and categories|length > 0 %}
 <script>
-  new Chart(document.getElementById("expenseChart"), {
-    type: "pie",
-    data: {
-      labels: {{ categories|tojson|safe }},
-      datasets: [{
-        data: {{ totals|tojson|safe }},
-        backgroundColor: [
-          "#4f46e5",
-          "#22c55e",
-          "#ef4444",
-          "#f59e0b",
-          "#0ea5e9",
-          "#8b5cf6"
-        ]
-      }]
-    },
-    options: {
-      plugins: { legend: { position: "bottom" } }
+/* Utility to read CSS variables (theme-aware) */
+function cssVar(name){
+  return getComputedStyle(document.body).getPropertyValue(name).trim();
+}
+
+const ctx = document.getElementById("expenseChart");
+const legendColor = cssVar("--text-main") || "#e5e7eb";
+
+const chart = new Chart(ctx, {
+  type: "pie",
+  data: {
+    labels: {{ categories|tojson|safe }},
+    datasets: [{
+      data: {{ totals|tojson|safe }},
+      backgroundColor: [
+        cssVar("--primary"),
+        cssVar("--accent"),
+        cssVar("--accent-2"),
+        "#f59e0b",
+        "#ef4444",
+        "#8b5cf6"
+      ],
+      borderColor: "transparent"
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { color: legendColor }
+      }
     }
-  });
+  }
+});
+
+/* Update chart colors when theme changes */
+new MutationObserver(() => {
+  chart.options.plugins.legend.labels.color = cssVar("--text-main");
+  chart.data.datasets[0].backgroundColor[0] = cssVar("--primary");
+  chart.data.datasets[0].backgroundColor[1] = cssVar("--accent");
+  chart.data.datasets[0].backgroundColor[2] = cssVar("--accent-2");
+  chart.update();
+}).observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
 </script>
 {% endif %}
 

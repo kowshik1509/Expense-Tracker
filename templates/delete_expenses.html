@@ -1,129 +1,180 @@
 {% extends "base.html" %}
-
 {% block content %}
 
 <style>
-  :root {
-    --danger:#dc2626;
-    --danger-dark:#b91c1c;
-    --danger-soft:#fee2e2;
-    --border:#e5e7eb;
-    --text-main:#1f2937;
-    --text-muted:#6b7280;
-  }
+/* ---------- BACKGROUND ---------- */
+.delete-expense-bg {
+  width: 100%;
+  min-height: calc(100vh - 72px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 18px;
 
+  background:
+    linear-gradient(rgba(254,226,226,.92), rgba(254,226,226,.92)),
+    url("https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Dark overlay */
+[data-theme="dark"] .delete-expense-bg {
+  background:
+    linear-gradient(rgba(24,0,0,.88), rgba(24,0,0,.88)),
+    url("https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80");
+}
+
+/* ---------- CARD ---------- */
+.expense-card {
+  background: var(--card-bg);
+  width: 480px;
+  max-width: 100%;
+  padding: 34px;
+  border-radius: 18px;
+  box-shadow: 0 24px 50px rgba(220,38,38,.28);
+  text-align: center;
+  animation: fadeIn .35s ease-in-out;
+}
+
+/* ---------- TITLES ---------- */
+.expense-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--danger, #dc2626);
+  margin-bottom: 8px;
+}
+
+.expense-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 22px;
+}
+
+/* ---------- FORM ---------- */
+label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+/* input + select */
+.expense-card input,
+.expense-card select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  margin-bottom: 14px;
+  transition: .2s;
+}
+
+.expense-card input::placeholder { color: var(--text-muted); }
+
+.expense-card input:focus,
+.expense-card select:focus {
+  border-color: var(--danger, #dc2626);
+  box-shadow: 0 0 0 3px rgba(220,38,38,.25);
+  outline: none;
+}
+
+/* select icon */
+.expense-card select {
+  appearance: none;
+  background-image:url("data:image/svg+xml;utf8,<svg fill='%23dc2626' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat:no-repeat;
+  background-position:calc(100% - 14px) center;
+  background-size:18px;
+  cursor:pointer;
+}
+
+/* ---------- FIELD GROUPS ---------- */
+.field-box {
+  padding: 14px;
+  border: 1px dashed rgba(220,38,38,.45);
+  border-radius: 12px;
+  background: rgba(254,226,226,.45);
+  margin-bottom: 14px;
+  animation: fadeIn .25s ease;
+}
+
+[data-theme="dark"] .field-box {
+  background: rgba(220,38,38,.08);
+  border-color: rgba(220,38,38,.35);
+}
+
+/* two-column inputs on wider screens */
+.field-grid {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .field-grid.two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- BUTTON ---------- */
+.expense-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.expense-card button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(220,38,38,.45);
+}
+
+/* ---------- WARNING ---------- */
+.warning {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--danger-soft, #fee2e2);
+  color: var(--danger-dark, #991b1b);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+[data-theme="dark"] .warning {
+  background: rgba(220,38,38,.12);
+  color: #fecaca;
+}
+
+/* ---------- ANIMATION ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 520px) {
+  .expense-card { padding: 24px; border-radius: 14px; }
+  .expense-title { font-size: 20px; }
+}
+
+/* reduce heavy bg on very small devices */
+@media (max-width: 480px) {
   .delete-expense-bg {
-    width:100%;
-    min-height:calc(100vh - 72px);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:
-      linear-gradient(rgba(254,226,226,.92),rgba(254,226,226,.92)),
-      url("https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80");
-    background-size:cover;
-    background-position:center;
+    background-attachment: scroll;
+    background-size: 900px auto;
   }
-
-  .expense-card {
-    background:#fff;
-    width:440px;
-    padding:38px;
-    border-radius:18px;
-    box-shadow:0 24px 50px rgba(220,38,38,.28);
-    text-align:center;
-    animation:fadeIn .35s ease-in-out;
-  }
-
-  .expense-title{
-    font-size:24px;
-    font-weight:900;
-    color:var(--danger);
-    margin-bottom:8px;
-  }
-
-  .expense-subtitle{
-    font-size:14px;
-    color:var(--text-muted);
-    margin-bottom:26px;
-  }
-
-  label{
-    display:block;
-    text-align:left;
-    font-size:13px;
-    font-weight:800;
-    color:var(--text-main);
-    margin-bottom:6px;
-  }
-
-  input,select{
-    width:100%;
-    padding:12px;
-    margin-bottom:18px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    font-size:14px;
-    outline:none;
-    background:#fff;
-    transition:.2s;
-  }
-
-  input:focus,select:focus{
-    border-color:var(--danger);
-    box-shadow:0 0 0 3px rgba(220,38,38,.2);
-  }
-
-  select{
-    appearance:none;
-    background-image:url("data:image/svg+xml;utf8,<svg fill='%23dc2626' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat:no-repeat;
-    background-position:calc(100% - 14px) center;
-    background-size:18px;
-    cursor:pointer;
-  }
-
-  .field-box{
-    padding:14px;
-    border:1px dashed #fca5a5;
-    border-radius:12px;
-    background:#fff7f7;
-    margin-bottom:16px;
-    animation:fadeIn .25s ease;
-  }
-
-  button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:linear-gradient(135deg,var(--danger),var(--danger-dark));
-    color:#fff;
-    font-size:15px;
-    font-weight:900;
-    cursor:pointer;
-    transition:.2s;
-  }
-
-  button:hover{
-    transform:translateY(-1px);
-    box-shadow:0 12px 22px rgba(220,38,38,.4);
-  }
-
-  .warning{
-    margin-top:20px;
-    padding:14px;
-    border-radius:12px;
-    background:var(--danger-soft);
-    color:var(--danger-dark);
-    font-size:13px;
-    font-weight:900;
-  }
-
-  @keyframes fadeIn{
-    from{opacity:0;transform:translateY(8px)}
-    to{opacity:1;transform:translateY(0)}
-  }
+}
 </style>
 
 <div class="delete-expense-bg">
@@ -152,19 +203,24 @@
       <!-- Date Range -->
       <div id="dateRangeBox" class="field-box" style="display:none;">
         <label>Delete expenses between</label>
-        <input type="date" name="from_date">
-        <input type="date" name="to_date">
+
+        <div class="field-grid two-col">
+          <input type="date" name="from_date">
+          <input type="date" name="to_date">
+        </div>
       </div>
 
       <!-- Specific Entry -->
       <div id="specificEntryBox" class="field-box" style="display:none;">
         <label for="entry_value">Delete specific entry</label>
-        <input id="entry_value" type="text" name="entry_value" placeholder="Enter Entry ID / Name / Ref">
+        <input id="entry_value" type="text" name="entry_value"
+               placeholder="Enter Entry ID / Name / Ref">
       </div>
 
       <!-- Password -->
       <label for="password">Confirm password</label>
-      <input id="password" type="password" name="password" placeholder="Enter your password" required>
+      <input id="password" type="password" name="password"
+             placeholder="Enter your password" required>
 
       <button type="submit">Delete</button>
     </form>
@@ -176,6 +232,7 @@
 </div>
 
 <script>
+/* Toggle field groups */
 const select = document.getElementById("delete_type");
 const beforeBox = document.getElementById("beforeDateBox");
 const rangeBox = document.getElementById("dateRangeBox");
@@ -186,9 +243,9 @@ select.addEventListener("change", () => {
   rangeBox.style.display = "none";
   entryBox.style.display = "none";
 
-  if(select.value === "before_date") beforeBox.style.display = "block";
-  if(select.value === "date_range") rangeBox.style.display = "block";
-  if(select.value === "specific_entry") entryBox.style.display = "block";
+  if (select.value === "before_date") beforeBox.style.display = "block";
+  if (select.value === "date_range") rangeBox.style.display = "block";
+  if (select.value === "specific_entry") entryBox.style.display = "block";
 });
 </script>
 
