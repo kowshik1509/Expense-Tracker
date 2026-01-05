@@ -221,7 +221,7 @@ def delete_expenses():
 #---------------------------------- USER PROFILE ----------------------------------------------
 @app.route("/ExpenseTracker/Profile")
 def profile():
-    if "user_id" not in session:
+    if "user" not in session:
         return redirect("/ExpenseTracker/Login")
 
     conn = get_connection("EXPT")
@@ -243,15 +243,15 @@ def profile():
 # --- SHOW PROFILE DATA (optional fetch if needed)
 @app.route("/ExpenseTracker/ProfileData")
 def profile_data():
-    if "user_id" not in session:
+    if "user" not in session:
         return redirect("/ExpenseTracker/Login")
-    return {"user_id": session["user_id"], "username": session["user"]}
+    return {"user": session["user"], "username": session["user"]}
 
 
 # --- EDIT PROFILE NAME ---
 @app.route("/ExpenseTracker/EditProfile", methods=["POST"])
 def edit_profile():
-    if "user_id" not in session":
+    if "user" not in session:
         return redirect("/ExpenseTracker/Login")
 
     new_name = request.form["new_name"]
@@ -272,7 +272,7 @@ def edit_profile():
 # --- CHANGE PASSWORD ---
 @app.route("/ExpenseTracker/ChangePassword", methods=["POST"])
 def change_password():
-    if "user_id" not in session:
+    if "user" not in session:
         return redirect("/ExpenseTracker/Login")
 
     old_pass = request.form["old_pass"]
