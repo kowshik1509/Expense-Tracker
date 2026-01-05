@@ -207,9 +207,19 @@ def delete_expenses():
 
 # ---------------------- Logout -> Login page ---------------------------------------------
 @app.route("/ExpenseTracker/logout")
-def logout():
+def logout_page():
+    if "username" not in session:
+        return redirect("/ExpenseTracker/Login")
+
+    return render_template("logout_confirm.html",
+                           username=session.get("username"),
+                           email=session.get("email"))
+
+@app.route("/ExpenseTracker/confirm_logout", methods=["POST"])
+def confirm_logout():
     session.clear()
     return redirect("/ExpenseTracker/Login")
+
 
 
 # ==================================================================================

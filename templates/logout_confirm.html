@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.logout-bg {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 28px;
+
+  background:
+    linear-gradient(rgba(248,250,252,.95), rgba(248,250,252,.95)),
+    url("https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1920&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+[data-theme="dark"] .logout-bg {
+  background:
+    linear-gradient(rgba(2,6,23,.9), rgba(2,6,23,.9)),
+    url("https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1920&q=80");
+}
+
+.logout-card {
+  background: var(--card-bg);
+  width: 420px;
+  max-width: 100%;
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: 0 22px 45px rgba(0,0,0,.2);
+  text-align: center;
+}
+
+.avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  font-size: 28px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.user-email {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.logout-warning {
+  font-size: 13px;
+  color: var(--danger-text);
+  margin-bottom: 18px;
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+}
+
+.actions button,
+.actions a {
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  text-decoration: none;
+  display: block;
+}
+
+.btn-logout {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+}
+
+.btn-cancel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+}
+</style>
+
+<div class="logout-bg">
+  <div class="logout-card">
+
+    <div class="avatar">
+      {{ username[0]|upper }}
+    </div>
+
+    <div class="user-name">{{ username }}</div>
+    {% if email %}
+      <div class="user-email">{{ email }}</div>
+    {% endif %}
+
+    <div class="logout-warning">
+      Are you sure you want to log out?
+    </div>
+
+    <form method="POST" action="/ExpenseTracker/confirm_logout" class="actions">
+      <button class="btn-logout" type="submit">Logout</button>
+      <a href="/ExpenseTracker/Home" class="btn-cancel">Cancel</a>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
