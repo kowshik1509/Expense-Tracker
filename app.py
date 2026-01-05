@@ -204,6 +204,34 @@ def delete_expenses():
     return render_template("delete_expenses.html")
 
 
+#---------------------------------- USER PROFILE ----------------------------------------------
+@app.route("/ExpenseTracker/Profile")
+def profile():
+    if "username" not in session:
+        return redirect("/ExpenseTracker/Login")
+
+    username = session["username"]
+
+    cur = db.cursor()
+    cur.execute("""
+        SELECT user_id, user_name, created_at
+        FROM et_users
+        WHERE user_name = %s
+    """, (username,))
+    user = cur.fetchone()
+    cur.close()
+
+    if not user:
+        flash("User not found", "error")
+        return redirect("/ExpenseTracker/Home")
+
+    return render_template(
+        "profile.html",
+        user=user,
+        username=username
+    )
+
+
 
 # ---------------------- Logout -> Login page ---------------------------------------------
 @app.route("/ExpenseTracker/logout")

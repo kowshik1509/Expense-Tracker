@@ -4,238 +4,235 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-/* ---------- PAGE BACKGROUND ---------- */
-.analytics-bg {
-  width: 100%;
-  min-height: calc(100vh - 72px);
-  padding: 44px 18px 64px;
 
+/* ---------- PAGE BACKDROP ---------- */
+.analytics-bg{
+  width:100%;
+  min-height:calc(100vh - 72px);
+  padding:44px 18px 64px;
   background:
-    linear-gradient(rgba(248,250,252,.94), rgba(248,250,252,.94)),
+    linear-gradient(rgba(248,250,252,.94),rgba(248,250,252,.94)),
     url("https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1920&q=80");
-  background-size: cover;
-  background-position: center;
+  background-size:cover;
+  background-position:center;
 }
 
-/* Dark overlay */
-[data-theme="dark"] .analytics-bg {
+[data-theme="dark"] .analytics-bg{
   background:
-    linear-gradient(rgba(2,6,23,.9), rgba(2,6,23,.9)),
+    linear-gradient(rgba(2,6,23,.90),rgba(2,6,23,.90)),
     url("https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1920&q=80");
 }
 
 /* ---------- FORM CARD ---------- */
-.expense-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 40px;
+.expense-page{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:40px;
 }
 
-.expense-card {
-  background: var(--card-bg);
-  width: 480px;
-  max-width: 100%;
-  padding: 32px;
-  border-radius: 18px;
-  box-shadow: 0 22px 45px rgba(0,0,0,.18);
-  text-align: center;
-  animation: fadeIn .35s ease-in-out;
+.expense-card{
+  background:var(--card-bg);
+  width:480px;
+  max-width:100%;
+  padding:32px;
+  border-radius:18px;
+  box-shadow:0 22px 45px rgba(0,0,0,.18);
+  text-align:center;
+  animation:fadeIn .35s ease-in-out;
 }
 
-.expense-title {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 6px;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.expense-title{
+  font-size:24px;
+  font-weight:800;
+  margin-bottom:6px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
-.expense-subtitle {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 24px;
+.expense-subtitle{
+  font-size:14px;
+  color:var(--text-muted);
+  margin-bottom:24px;
 }
 
-/* labels + inputs */
-label {
-  display: block;
-  text-align: left;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-bottom: 6px;
+/* ---------- FORM INPUTS ---------- */
+label{
+  display:block;
+  text-align:left;
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-main);
+  margin-bottom:6px;
 }
 
-.expense-card input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 18px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  font-size: 14px;
-  background: var(--card-bg);
-  color: var(--text-main);
+.expense-card input{
+  width:100%;
+  padding:12px;
+  margin-bottom:18px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  font-size:14px;
+  background:var(--card-bg);
+  color:var(--text-main);
 }
 
-.expense-card input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79,70,229,.22);
-  outline: none;
+.expense-card input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(79,70,229,.22);
+  outline:none;
 }
 
-.expense-card button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
+.expense-card button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
 }
 
 /* ---------- CHART CARD ---------- */
-.chart-section {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 40px;
+.chart-section{
+  display:flex;
+  justify-content:center;
+  margin-bottom:40px;
 }
 
-.chart-card {
-  background: var(--card-bg);
-  width: 480px;
-  max-width: 100%;
-  padding: 28px;
-  border-radius: 18px;
-  box-shadow: 0 22px 45px rgba(0,0,0,.18);
-  text-align: center;
+.chart-card{
+  background:var(--card-bg);
+  width:480px;
+  max-width:100%;
+  padding:28px;
+  border-radius:18px;
+  box-shadow:0 22px 45px rgba(0,0,0,.18);
+  text-align:center;
 }
 
-.chart-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 14px;
+.chart-title{
+  font-size:16px;
+  font-weight:800;
+  color:var(--text-main);
+  margin-bottom:14px;
 }
 
-.chart-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 240px;
+.chart-wrap{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:240px;
 }
 
-#expenseChart {
-  max-width: 260px;
-  max-height: 260px;
+#expenseChart{
+  max-width:260px;
+  max-height:260px;
 }
 
-.chart-summary {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-top: 10px;
+.chart-summary{
+  font-size:14px;
+  font-weight:600;
+  color:var(--text-muted);
+  margin-top:10px;
 }
 
-.chart-summary span {
-  display: block;
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--accent-2, #22c55e);
-  margin-top: 6px;
+.chart-summary span{
+  display:block;
+  font-size:22px;
+  font-weight:900;
+  color:var(--accent-2,#22c55e);
+  margin-top:6px;
 }
 
 /* ---------- RESULTS TABLE ---------- */
-.results-section {
-  max-width: 1150px;
-  margin: 0 auto;
-  background: var(--card-bg);
-  padding: 28px 30px;
-  border-radius: 20px;
-  box-shadow: 0 26px 55px rgba(0,0,0,.22);
+.results-section{
+  max-width:1150px;
+  margin:0 auto;
+  background:var(--card-bg);
+  padding:28px 30px;
+  border-radius:20px;
+  box-shadow:0 26px 55px rgba(0,0,0,.22);
 }
 
-.results-title {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--text-main);
-  margin-bottom: 14px;
+.results-title{
+  font-size:18px;
+  font-weight:900;
+  color:var(--text-main);
+  margin-bottom:14px;
 }
 
-/* mobile scroll wrapper */
-.table-wrapper {
-  overflow-x: auto;
+.table-wrapper{
+  overflow-x:auto;
 }
 
-/* table */
-.expense-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-  min-width: 720px;
+.expense-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+  min-width:720px;
 }
 
-.expense-table th {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #fff;
-  padding: 14px;
-  text-align: left;
+.expense-table th{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;
+  padding:14px;
+  text-align:left;
 }
 
-.expense-table td {
-  padding: 14px;
-  color: var(--text-main);
-  border-bottom: 1px solid var(--border);
+.expense-table td{
+  padding:14px;
+  color:var(--text-main);
+  border-bottom:1px solid var(--border);
 }
 
-.expense-table tbody tr:nth-child(even) {
-  background: var(--row-alt, #f8fafc);
+.expense-table tbody tr:nth-child(even){
+  background:var(--row-alt,#f8fafc);
 }
 
-[data-theme="dark"] .expense-table tbody tr:nth-child(even) {
-  background: rgba(255,255,255,.04);
+[data-theme="dark"] .expense-table tbody tr:nth-child(even){
+  background:rgba(255,255,255,.05);
 }
 
-.expense-table tbody tr:hover {
-  background: rgba(79,70,229,.08);
+.expense-table tbody tr:hover{
+  background:rgba(79,70,229,.08);
 }
 
-.expense-table td:last-child {
-  font-weight: 800;
-  color: var(--accent-2, #22c55e);
+.expense-table td:last-child{
+  font-weight:800;
+  color:var(--accent-2,#22c55e);
 }
 
-.no-data {
-  text-align: center;
-  font-size: 14px;
-  color: var(--text-muted);
-  padding: 22px 0;
+.no-data{
+  text-align:center;
+  font-size:14px;
+  color:var(--text-muted);
+  padding:22px 0;
 }
 
 /* ---------- ANIMATION ---------- */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
 }
 
 /* ---------- MOBILE ---------- */
-@media (max-width: 520px) {
-  .expense-card, .chart-card {
-    padding: 22px;
-    border-radius: 14px;
+@media(max-width:520px){
+  .expense-card,.chart-card{
+    padding:22px;
+    border-radius:14px;
   }
-  .expense-title { font-size: 20px; }
-  .chart-wrap { min-height: 200px; }
+  .expense-title{font-size:20px}
+  .chart-wrap{min-height:200px}
 }
 
-/* Reduce heavy bg rendering on very small devices */
-@media (max-width: 480px) {
-  .analytics-bg {
-    background-attachment: scroll;
-    background-size: 900px auto;
+/* reduce heavy bg paint on small screens */
+@media(max-width:480px){
+  .analytics-bg{
+    background-attachment:scroll;
+    background-size:900px auto;
   }
 }
 </style>
@@ -319,7 +316,7 @@ label {
 
 {% if categories is defined and categories|length > 0 %}
 <script>
-/* Utility to read CSS variables (theme-aware) */
+/* Theme-aware color getter */
 function cssVar(name){
   return getComputedStyle(document.body).getPropertyValue(name).trim();
 }
@@ -327,13 +324,13 @@ function cssVar(name){
 const ctx = document.getElementById("expenseChart");
 const legendColor = cssVar("--text-main") || "#e5e7eb";
 
-const chart = new Chart(ctx, {
-  type: "pie",
-  data: {
+const chart = new Chart(ctx,{
+  type:"pie",
+  data:{
     labels: {{ categories|tojson|safe }},
-    datasets: [{
+    datasets:[{
       data: {{ totals|tojson|safe }},
-      backgroundColor: [
+      backgroundColor:[
         cssVar("--primary"),
         cssVar("--accent"),
         cssVar("--accent-2"),
@@ -341,29 +338,29 @@ const chart = new Chart(ctx, {
         "#ef4444",
         "#8b5cf6"
       ],
-      borderColor: "transparent"
+      borderColor:"transparent"
     }]
   },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: { color: legendColor }
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{
+        position:"bottom",
+        labels:{ color:legendColor }
       }
     }
   }
 });
 
-/* Update chart colors when theme changes */
+/* Auto-update colors when theme changes */
 new MutationObserver(() => {
   chart.options.plugins.legend.labels.color = cssVar("--text-main");
   chart.data.datasets[0].backgroundColor[0] = cssVar("--primary");
   chart.data.datasets[0].backgroundColor[1] = cssVar("--accent");
   chart.data.datasets[0].backgroundColor[2] = cssVar("--accent-2");
   chart.update();
-}).observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
+}).observe(document.body,{ attributes:true, attributeFilter:["data-theme"] });
 </script>
 {% endif %}
 
