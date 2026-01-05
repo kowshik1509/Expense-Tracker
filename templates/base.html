@@ -2,217 +2,106 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Expense Tracker</title>
+<title>{% block title %}Expense Tracker{% endblock %}</title>
 
 <style>
-/* ---------- BRIGHT THEME (LIGHT DEFAULT) ---------- */
+/* ==== THEME VARIABLES (LIGHT) ==== */
 :root {
-  --primary:#6366f1;
-  --accent:#0ea5e9;
-  --accent-2:#22c55e;
-
+  --primary:#6366f1; --accent:#0ea5e9; --accent-2:#22c55e;
   --danger:#dc2626;
-  --danger-text:#b91c1c;
-
-  --nav-bg:#ffffff;
-  --border:#e5e7eb;
-
-  --text-main:#111827;
-  --text-muted:#6b7280;
-
-  --page-bg-1:#eef2ff;
-  --page-bg-2:#e0f2fe;
-
+  --nav-bg:#ffffff; --border:#e5e7eb;
+  --text-main:#111827; --text-muted:#6b7280;
+  --page-bg-1:#eef2ff; --page-bg-2:#e0f2fe;
   --card-bg:#ffffff;
-
-  --success-bg:#d1fae5;
-  --success-text:#065f46;
-  --error-bg:#fee2e2;
-  --error-text:#7f1d1d;
 }
 
-/* ---------- DARK THEME ---------- */
-[data-theme="dark"] {
-  --primary:#818cf8;
-  --accent:#38bdf8;
-  --accent-2:#4ade80;
-
+/* ==== DARK MODE ==== */
+[data-theme="dark"]{
+  --primary:#818cf8; --accent:#38bdf8; --accent-2:#4ade80;
   --nav-bg:#0f172a;
-
-  --text-main:#e5e7eb;
-  --text-muted:#9ca3af;
-
-  --page-bg-1:#020617;
-  --page-bg-2:#020617;
-
-  --card-bg:#111827;
-
-  --border:#1f2937;
-
-  --success-bg:#052e16;
-  --success-text:#86efac;
-  --error-bg:#3f0d12;
-  --error-text:#fecaca;
+  --text-main:#e5e7eb; --text-muted:#9ca3af;
+  --page-bg-1:#020617; --page-bg-2:#020617;
+  --card-bg:#111827; --border:#1f2937;
 }
 
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:"Segoe UI",Tahoma,Verdana,sans-serif;
+  font-family:Segoe UI,Arial;
   background:linear-gradient(135deg,var(--page-bg-1),var(--page-bg-2));
   min-height:100vh;
   color:var(--text-main);
 }
 
-/* ---------- NAVBAR ---------- */
+/* ==== NAVBAR ==== */
 .navbar{
-  position:sticky;
-  top:0;
-  height:72px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 20px;
-  background:var(--nav-bg);
+  height:72px; display:flex; justify-content:space-between; align-items:center;
+  padding:0 20px; background:var(--nav-bg);
   border-bottom:3px solid;
   border-image:linear-gradient(90deg,var(--primary),var(--accent),var(--accent-2)) 1;
-  box-shadow:0 6px 14px rgba(0,0,0,.12);
-  z-index:1000;
 }
+.logo{font-weight:900;font-size:20px}
 
-.logo{
-  font-size:20px;
-  font-weight:800;
-  background:linear-gradient(90deg,var(--primary),var(--accent));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* ---------- NAV LINKS ---------- */
-.nav-links{
-  display:flex;
-  gap:20px;
-  align-items:center;
-}
-
-.nav-links a{
-  font-size:14px;
-  font-weight:600;
-  color:var(--text-muted);
-  text-decoration:none;
-  position:relative;
-  padding:6px 2px;
-}
-
+/* ---- links ---- */
+.nav-links{display:flex;gap:18px;align-items:center}
+.nav-links a{text-decoration:none;font-weight:600;color:var(--text-muted)}
 .nav-links a:hover{color:var(--primary)}
 
-.nav-links a::after{
-  content:"";
-  position:absolute;
-  left:0;bottom:-6px;
-  width:0;height:3px;
-  background:linear-gradient(90deg,var(--primary),var(--accent));
-  transition:.2s;
-  border-radius:3px;
-}
-
-.nav-links a:hover::after{width:100%}
-
-.nav-links a.delete{color:var(--danger-text)}
-
-/* ---------- THEME DROPDOWN ---------- */
+/* ==== THEME SELECT ==== */
 .theme-select{
-  border:1px solid var(--border);
-  background:transparent;
-  padding:6px 10px;
-  border-radius:8px;
-  font-size:13px;
-  cursor:pointer;
-  color:var(--text-muted);
+  border:1px solid var(--border); background:transparent;
+  padding:6px 10px; border-radius:8px; font-size:13px;
 }
-.theme-select option{color:#000}
 
-/* ---------- PROFILE DROPDOWN ---------- */
+/* ==== PROFILE BUTTON ==== */
 .profile-wrapper{position:relative}
-
 .profile-btn{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 10px;
-  border-radius:10px;
+  display:flex;align-items:center;gap:8px;
   border:1px solid var(--border);
-  background:var(--card-bg);
-  cursor:pointer;
-  font-size:13px;
-  color:var(--text-main);
+  background:var(--card-bg);padding:6px 10px;
+  border-radius:10px;cursor:pointer;
 }
-
 .avatar-bubble{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;
-  font-weight:900;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:13px;
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;
 }
 
+/* ==== PROFILE MENU ==== */
 .profile-menu{
-  position:absolute;
-  top:42px;
-  right:0;
-  min-width:160px;
+  position:absolute;top:42px;right:0;
   background:var(--card-bg);
   border:1px solid var(--border);
   border-radius:12px;
-  box-shadow:0 16px 40px rgba(0,0,0,.25);
-  display:none;
-  z-index:10000;
+  display:none;min-width:170px;
 }
-
 .profile-menu.open{display:block}
-
-.profile-menu a{
-  display:block;
-  padding:12px 14px;
-  font-size:13px;
-  font-weight:600;
-  color:var(--text-main);
-  text-decoration:none;
+.profile-menu button,.profile-menu a{
+  width:100%;text-align:left;border:none;background:none;
+  padding:12px 14px;font-size:13px;font-weight:600;
+  color:var(--text-main);cursor:pointer;text-decoration:none;
 }
-
-.profile-menu a:hover{
-  background:rgba(79,70,229,.1);
+.profile-menu button:hover,.profile-menu a:hover{
+  background:rgba(99,102,241,.12);
 }
+.logout-link{color:var(--danger)}
 
-.profile-menu .logout-link{
-  color:var(--danger);
+/* ==== MODAL ==== */
+.modal{
+  position:fixed;inset:0;
+  display:none;justify-content:center;align-items:center;
+  background:rgba(0,0,0,.45);z-index:9999;
 }
-
-/* ---------- MOBILE ---------- */
-.menu-btn{display:none;font-size:22px;cursor:pointer}
-
-@media(max-width:820px){
-  .nav-links{
-    position:fixed;
-    top:72px;right:0;
-    width:240px;
-    height:calc(100vh - 72px);
-    flex-direction:column;
-    padding:20px;
-    background:var(--card-bg);
-    transform:translateX(100%);
-    transition:.25s;
-    box-shadow:-10px 0 28px rgba(0,0,0,.25);
-  }
-  .nav-links.open{transform:translateX(0)}
-  .menu-btn{display:block}
+.modal.show{display:flex}
+.modal-card{
+  background:var(--card-bg);padding:26px;border-radius:16px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+  min-width:300px;
 }
+.modal-card h3{margin-top:0}
+
+/* ==== LAYOUT WRAPPER ==== */
+.container{padding:26px}
 </style>
 </head>
 
@@ -221,78 +110,103 @@ body{
 <nav class="navbar">
   <div class="logo">💰 ExpenseTracker</div>
 
-  <span class="menu-btn" onclick="toggleMenu()">☰</span>
-
-  <div class="nav-links" id="navMenu">
+  <div class="nav-links">
     <a href="/ExpenseTracker/Home">Home</a>
     <a href="/ExpenseTracker/AddExpense">Add Expense</a>
     <a href="/ExpenseTracker/GetExpenses">View Expenses</a>
-    <a href="/ExpenseTracker/DeleteOldExpenses" class="delete">Delete</a>
+    <a href="/ExpenseTracker/DeleteOldExpenses">Delete</a>
 
-    <!-- THEME DROPDOWN -->
-    <select class="theme-select" id="themeSelect" onchange="applyTheme(this.value)">
+    <!-- Theme -->
+    <select id="themeSelect" class="theme-select" onchange="applyTheme(this.value)">
       <option value="system">🖥️ System</option>
       <option value="light">☀️ Bright</option>
       <option value="dark">🌙 Dark</option>
     </select>
 
-    <!-- 👤 PROFILE DROPDOWN -->
+    <!-- PROFILE -->
     <div class="profile-wrapper">
       <button class="profile-btn" onclick="toggleProfileMenu(event)">
-        <div class="avatar-bubble">
-          {{ username[0]|upper if username else 'U' }}
+        <div class="avatar-bubble" id="avatarBubble">
+          {{ username[0]|upper if username else "U" }}
         </div>
         {{ username }}
       </button>
 
       <div class="profile-menu" id="profileMenu">
-        <a href="/ExpenseTracker/Profile">👤 Profile</a>
+        <button onclick="openModal('profileModal')">👤 Profile</button>
+        <button onclick="openModal('editModal')">✏️ Edit Profile</button>
+        <button onclick="openModal('passwordModal')">🔑 Change Password</button>
         <a href="/ExpenseTracker/logout" class="logout-link">🚪 Logout</a>
       </div>
     </div>
   </div>
 </nav>
 
-<script>
-/* ---- MOBILE MENU ---- */
-function toggleMenu(){
-  document.getElementById("navMenu").classList.toggle("open");
-}
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
 
-/* ---- PROFILE DROPDOWN ---- */
+<!-- ==== PROFILE MODAL ==== -->
+<div class="modal" id="profileModal">
+  <div class="modal-card">
+    <h3>👤 Profile</h3>
+    <p><b>Name:</b> {{ username }}</p>
+    <p><b>User ID:</b> {{ session['user_id'] }}</p>
+    <button onclick="closeModal('profileModal')">Close</button>
+  </div>
+</div>
+
+<!-- ==== EDIT PROFILE MODAL ==== -->
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <h3>✏️ Edit Profile</h3>
+    <form method="POST" action="/ExpenseTracker/EditProfile">
+      <input name="new_name" value="{{ username }}" required>
+      <button type="submit">Save</button>
+    </form>
+    <button onclick="closeModal('editModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ==== CHANGE PASSWORD MODAL ==== -->
+<div class="modal" id="passwordModal">
+  <div class="modal-card">
+    <h3>🔑 Change Password</h3>
+    <form method="POST" action="/ExpenseTracker/ChangePassword">
+      <input type="password" name="old_pass" placeholder="Old Password" required>
+      <input type="password" name="new_pass" placeholder="New Password" required>
+      <button type="submit">Update</button>
+    </form>
+    <button onclick="closeModal('passwordModal')">Cancel</button>
+  </div>
+</div>
+
+<script>
+/* Avatar color */
+function avatarColor(n){let h=0;for(let c of n)h=c.charCodeAt(0)+((h<<5)-h);return`hsl(${h%360},70%,55%)`}
+document.getElementById("avatarBubble").style.background =
+  `linear-gradient(135deg, ${avatarColor("{{ username }}")}, var(--accent))`;
+
+/* Profile dropdown */
 function toggleProfileMenu(e){
   e.stopPropagation();
   document.getElementById("profileMenu").classList.toggle("open");
 }
+document.addEventListener("click",()=>document.getElementById("profileMenu").classList.remove("open"));
 
-/* Close dropdown when clicking outside */
-document.addEventListener("click",()=>{
-  document.getElementById("profileMenu").classList.remove("open");
-});
+/* Modals */
+function openModal(id){document.getElementById(id).classList.add("show")}
+function closeModal(id){document.getElementById(id).classList.remove("show")}
 
-/* ---- SYSTEM THEME DETECTION ---- */
-const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-function setSystemTheme(){
-  document.body.setAttribute("data-theme", mediaQuery.matches ? "dark" : "light");
-}
-
-/* ---- APPLY THEME ---- */
+/* Theme */
+const mq = window.matchMedia("(prefers-color-scheme: dark)");
+function setSystem(){document.body.dataset.theme = mq.matches?"dark":"light";}
 function applyTheme(mode){
-  localStorage.setItem("theme-mode", mode);
-  document.getElementById("themeSelect").value = mode;
-
-  if(mode === "system"){
-    setSystemTheme();
-    mediaQuery.addEventListener("change", setSystemTheme);
-  } else {
-    mediaQuery.removeEventListener("change", setSystemTheme);
-    document.body.setAttribute("data-theme", mode);
-  }
+  localStorage.setItem("theme-mode",mode);
+  if(mode==="system"){setSystem();mq.addEventListener("change",setSystem);}
+  else{mq.removeEventListener("change",setSystem);document.body.dataset.theme=mode;}
 }
-
-/* ---- LOAD SAVED THEME ---- */
-applyTheme(localStorage.getItem("theme-mode") || "system");
+applyTheme(localStorage.getItem("theme-mode")||"system");
 </script>
 
 </body>

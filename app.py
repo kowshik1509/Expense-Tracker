@@ -68,18 +68,32 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
 
-    data = {
-        "USER_NAME": request.form["username"],
-        "PASSWORD": request.form["password"]
-    }
+    username = request.form["username"]
+    password = request.form["password"]
 
-    res, status = LoginUser().post(data)
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT user_id, user_password
+        FROM et_users
+        WHERE user_name = %s
+    """, (username,))
+    row = cur.fetchone()
+    cur.close()
 
-    if status != 200:
-        return render_template("login.html", error=res.get("error"))
+    if not row:
+        return render_template("login.html", error="User not found")
 
-    session["user"] = data["USER_NAME"]
+    user_id, db_pass = row
+    if db_pass != password:
+        return render_template("login.html", error="Invalid password")
+
+    # 🔹 Store both id + name in session
+    session["user_id"] = user_id
+    session["user"] = username
+
     return redirect("/ExpenseTracker/Home")
+
 
 
 # -------------------- New user creation route ---------------------------------------
@@ -207,46 +221,100 @@ def delete_expenses():
 #---------------------------------- USER PROFILE ----------------------------------------------
 @app.route("/ExpenseTracker/Profile")
 def profile():
-    if "username" not in session:
+    if "user_id" not in session:
         return redirect("/ExpenseTracker/Login")
 
-    username = session["username"]
-
-    cur = db.cursor()
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
     cur.execute("""
-        SELECT user_id, user_name, created_at
+        SELECT user_name, created_at
         FROM et_users
-        WHERE user_name = %s
-    """, (username,))
+        WHERE user_id = %s
+    """, (session["user_id"],))
     user = cur.fetchone()
     cur.close()
 
-    if not user:
-        flash("User not found", "error")
-        return redirect("/ExpenseTracker/Home")
-
     return render_template(
         "profile.html",
-        user=user,
-        username=username
+        username=user[0],
+        created_at=user[1]
     )
+
+# --- SHOW PROFILE DATA (optional fetch if needed)
+@app.route("/ExpenseTracker/ProfileData")
+def profile_data():
+    if "user_id" not in session:
+        return redirect("/ExpenseTracker/Login")
+    return {"user_id": session["user_id"], "username": session["user"]}
+
+
+# --- EDIT PROFILE NAME ---
+@app.route("/ExpenseTracker/EditProfile", methods=["POST"])
+def edit_profile():
+    if "user_id" not in session":
+        return redirect("/ExpenseTracker/Login")
+
+    new_name = request.form["new_name"]
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE et_users SET user_name=%s WHERE user_id=%s RETURNING user_name",
+        (new_name, session["user_id"])
+    )
+    conn.commit()
+    session["user"] = new_name
+    cur.close()
+    flash("Profile updated", "success")
+    return redirect("/ExpenseTracker/Home")
+
+
+# --- CHANGE PASSWORD ---
+@app.route("/ExpenseTracker/ChangePassword", methods=["POST"])
+def change_password():
+    if "user_id" not in session:
+        return redirect("/ExpenseTracker/Login")
+
+    old_pass = request.form["old_pass"]
+    new_pass = request.form["new_pass"]
+
+    conn = get_connection("EXPT")
+    cur = conn.cursor()
+
+    cur.execute("SELECT user_password FROM et_users WHERE user_id=%s",
+                (session["user_id"],))
+    db_pass = cur.fetchone()[0]
+
+    if old_pass != db_pass:
+        flash("Old password incorrect", "error")
+        return redirect("/ExpenseTracker/Home")
+
+    cur.execute("UPDATE et_users SET user_password=%s WHERE user_id=%s",
+                (new_pass, session["user_id"]))
+    conn.commit()
+    cur.close()
+
+    flash("Password updated", "success")
+    return redirect("/ExpenseTracker/Home")
+
 
 
 
 # ---------------------- Logout -> Login page ---------------------------------------------
 @app.route("/ExpenseTracker/logout")
 def logout_page():
-    if "username" not in session:
+    if "user" not in session:
         return redirect("/ExpenseTracker/Login")
 
     return render_template("logout_confirm.html",
-                           username=session.get("username"),
-                           email=session.get("email"))
+                           username=session["user"])
+
 
 @app.route("/ExpenseTracker/confirm_logout", methods=["POST"])
 def confirm_logout():
     session.clear()
     return redirect("/ExpenseTracker/Login")
+
 
 
 

@@ -1,88 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 
-<style>
-.profile-bg{
-  min-height:calc(100vh - 72px);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:32px 18px;
-}
+<div class="card">
+  <h2>👤 Profile</h2>
 
-.profile-card{
-  background:var(--card-bg);
-  padding:32px;
-  width:440px;
-  max-width:100%;
-  border-radius:18px;
-  box-shadow:0 22px 45px rgba(0,0,0,.18);
-  animation:fadeIn .35s ease-in-out;
-}
+  <p><b>Name:</b> {{ username }}</p>
+  <p><b>Account Created:</b> {{ created_at }}</p>
 
-.profile-title{
-  font-size:22px;
-  font-weight:900;
-  margin-bottom:4px;
-  background:linear-gradient(90deg,var(--primary),var(--accent));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.profile-sub{
-  font-size:13px;
-  color:var(--text-muted);
-  margin-bottom:18px;
-}
-
-.profile-row{
-  padding:12px 0;
-  border-bottom:1px solid var(--border);
-}
-
-.profile-row span{
-  display:block;
-  font-size:13px;
-  color:var(--text-muted);
-}
-
-.profile-row strong{
-  font-size:15px;
-  color:var(--text-main);
-}
-
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(8px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-@media(max-width:520px){
-  .profile-card{padding:22px;border-radius:14px}
-}
-</style>
-
-<div class="profile-bg">
-  <div class="profile-card">
-
-    <div class="profile-title">👤 User Profile</div>
-    <div class="profile-sub">Your account information</div>
-
-    <div class="profile-row">
-      <span>User ID</span>
-      <strong>{{ user[0] }}</strong>
-    </div>
-
-    <div class="profile-row">
-      <span>Username</span>
-      <strong>{{ user[1] }}</strong>
-    </div>
-
-    <div class="profile-row">
-      <span>Account Created</span>
-      <strong>{{ user[2] }}</strong>
-    </div>
-
-  </div>
+  <a href="/ExpenseTracker/Home">Back to Dashboard</a>
 </div>
 
 {% endblock %}
